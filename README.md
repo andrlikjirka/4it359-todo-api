@@ -1,3 +1,14 @@
+# Week 1
+
+## exercise
+- install dotnet8.0
+- pick an IDE and install it
+- install git
+- create a new solution with a new console project working with console arguments
+- ensure the solution can be build and the executable works as expected.
+
+---
+
 It's completely fine to wait for the next class and ask if there is anything unclear. There is no weakly dead-line so you can postpone and implement any exercise a week later.
 
 # exercises - fork before use!
