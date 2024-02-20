@@ -1,36 +1,34 @@
-It's completely fine to wait for the next class and ask if there is anything unclear. There is no weakly dead-line so you can postpone and implement any exercise a week later.
 
-# exercises - fork before use!
+This week, you’re provided with a data set containing information about cars in JSON format.
 
-This repository keeps all exercises, however, you aren't supposed to change it directly.
+There’s a `Car` DTO available in the `Car.cs` file.
 
-Before implementing any exercise, please ensure to fork this repository to this group, following this pattern:
+In your program, you’ll need to load that data set into memory and then write following queries:
 
+1. List first 20 cars which were manufactured in Japan between years 1970-1980 and pick only Name and Year properties. Year property should be parsed in order to show only a year part of the date.
+2. List all 4-cylinder cars ordered from the fastest to the slowest, and for cars that have identical acceleration, order them by their gasoline consumption from the greediest and pick only Name and Year properties.
+3. List origins ordered by a sum of all car models manufactured in a given country or origin.
+
+Write each resulting list into console.
+
+## File reading hint
+
+<details>
+
+```csharp
+var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+using var file = File.OpenRead("./Data/car-data.json");
+var cars = JsonSerializer.Deserialize<List<Car>>(file, options);
 ```
-https://gitlab.com/FIS-VSE/4IT359/exercises-{your insis alias}
+
+</details>
+
+## Date parsing hint
+
+<details>
+
+```csharp
+var year = DateTime.ParseExact(car.Year, "yyyy-mm-dd", CultureInfo.InvariantCulture).Year;
 ```
 
-For example: `https://gitlab.com/FIS-VSE/4IT359/exercises-ruzj16` would work for my alias.
-
-# weekly branches
-
-There will be one new branch each week except the last week. 
-The branch will be called `week{week number}` (for example, the first week there will be a branch called `week01`). 
-There will be three main parts in each weekly branch:
-
-1. slides from related class
-2. exercise desctiption in readme.md file
-3. other files related to the exercise
-
-# Implementing an exercise
-
-Exercises are implemented in your fork, not in the main repository.
-1. pull changes from the main repository to see the weekly branch you want to implement
-2. checkout the weekly branch
-3. read the readme.md in the weekly branch
-4. create a branch for your implementation
-5. implement the exercise using one or more commits
-6. push your commits
-7. create a pull request to merge the branch into the weekly branch
-8. let others to review the PR and approve it (you may ask someone if noone does it on his own)
-9. merge the PR to the weekly branch
+</details>
