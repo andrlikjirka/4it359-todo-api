@@ -1,6 +1,6 @@
 using System;
 {
-    Console.WriteLine("");
+    Console.WriteLine("yeet");
 }
 
 
