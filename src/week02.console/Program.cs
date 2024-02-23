@@ -1,6 +1,6 @@
 using System;
 {
-    Console.WriteLine("");
+    Console.WriteLine($"Name: {car.Name}, Year: {car.Year}" );
 }
 
 
