@@ -1,3 +1,5 @@
+using System.Reflection.Metadata.Ecma335;
+
 namespace week02.Console;
 
 /// <summary>
@@ -50,5 +52,20 @@ public record Car
     /// The country where the car originates.
     /// </summary>
     public required string Origin { get; init; }
+
+    public override string ToString() 
+    {
+        return $@"Information about vehicle:
+Name: {Name}
+Miles per gallon: {MilesPerGallon}
+Cylinders: {Cylinders}
+Displacement: {Displacement}
+Horsepower: {Horsepower}
+Weight in pounds: {WeightInLbs}
+Acceleration: {Acceleration}
+Year: {Year}
+Origin: {Origin}
+";
+    }
 }
 
