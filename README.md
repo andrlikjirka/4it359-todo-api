@@ -1,36 +1,50 @@
-It's completely fine to wait for the next class and ask if there is anything unclear. There is no weakly dead-line so you can postpone and implement any exercise a week later.
+This week, we extend the the example todo app from Monday's class.
+Currently, we can create, read, update and delete todo items.
+Now, we add endpoints to filter the items and get only a subset of them.
 
-# exercises - fork before use!
+There are three things we need to do:
 
-This repository keeps all exercises, however, you aren't supposed to change it directly.
+1. Extend the example app by adding a new controller using path `api/query`.
 
-Before implementing any exercise, please ensure to fork this repository to this group, following this pattern:
+2. Implement a POST endpoint in the controller with path `api/query`. The endpoint accepts requests like this:
 
-```
-https://gitlab.com/FIS-VSE/4IT359/exercises-{your insis alias}
-```
+    ```
+    {
+        "name": "Python"
+        "progressFrom": 40
+        "progressTo": 87
+        "dueDateFrom": "2024-02-20T09:16:23.9713139+01:00"
+        "dueDateTo": "2024-02-29T09:16:23.9713139+01:00"
+        "limit": 5
+    }
+    ```
 
-For example: `https://gitlab.com/FIS-VSE/4IT359/exercises-ruzj16` would work for my alias.
+    The `name` property will be used to filter item titles to only those containing the value (case insensitive).
+    For example, value "rust" should filter out "Learn Python" but not "Try RustLang".
 
-# weekly branches
+    The `progressFrom` and "progressTo" properties set minimum and maximum progress we are interested in.
+    
+    The `dueDateFrom` and "dueDateTo" properties set minimum and maximum date and time we are interested in.
 
-There will be one new branch each week except the last week. 
-The branch will be called `week{week number}` (for example, the first week there will be a branch called `week01`). 
-There will be three main parts in each weekly branch:
+    The `limit` property sets the maximum number of items to return.
 
-1. slides from related class
-2. exercise desctiption in readme.md file
-3. other files related to the exercise
+    All properties are optional except the `limit` which has to be higher than 0 (there is no point to query todo items when we don't want any).
 
-# Implementing an exercise
+    ## Bonus
+    <details>
 
-Exercises are implemented in your fork, not in the main repository.
-1. pull changes from the main repository to see the weekly branch you want to implement
-2. checkout the weekly branch
-3. read the readme.md in the weekly branch
-4. create a branch for your implementation
-5. implement the exercise using one or more commits
-6. push your commits
-7. create a pull request to merge the branch into the weekly branch
-8. let others to review the PR and approve it (you may ask someone if noone does it on his own)
-9. merge the PR to the weekly branch
+        Add validations to other properties (besides the `limit`) too and spare users from confusion why they don't get what they expected.
+
+    </details>
+    <br/>
+
+3. Implement a GET endpoint on the controller with path `api/query/priority/{priority}`.
+    The `{priority}` path parameter will accept an integer between 1 and 5 to only return items with matching priority.
+
+    ## Bonus
+    <details>
+        
+        Add URL query parameter "limit" to let users set how many items can be returned.
+        An example URL: `http:localhost:5000/api/query/priority/3?limit=20`
+
+    </details>
