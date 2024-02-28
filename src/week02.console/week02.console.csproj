@@ -6,10 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="Data\car-data.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="mkdir -p &quot;$(TargetDir)Data\&quot;" />
+    <Exec Command="cp &quot;$(ProjectDir)Data\car-data.json&quot; &quot;$(TargetDir)Data\&quot;" />
+  </Target>
+  
 </Project>
