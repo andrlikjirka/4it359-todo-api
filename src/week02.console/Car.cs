@@ -1,4 +1,4 @@
-namespace week02.Console;
+namespace week02.console;
 
 /// <summary>
 /// The class represents a Car with basic information.
