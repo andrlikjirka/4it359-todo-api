@@ -26,3 +26,5 @@ app.MapControllers();
 app.SeedData();
 
 app.Run();
+
+public partial class Program;
