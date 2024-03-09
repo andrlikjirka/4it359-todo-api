@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using TodoApp.Api.Data;
 using TodoApp.Api.Filters;
@@ -21,7 +22,7 @@ public class QueryController : Controller
     public async Task<ActionResult<Item[]>> Post(QueryRequest request)
     {
         var result = await _itemRepository.FindByQuery(request);
-        return Ok(result);
+        return result.Length == 0 ? NotFound() : Ok(result);
     }
 
     [HttpGet("priority/{priority}")]
@@ -38,6 +39,6 @@ public class QueryController : Controller
         }
         
         var result = await _itemRepository.FindByPriority(priority, limit);
-        return Ok(result);
+        return result.Length == 0 ? NotFound() : Ok(result);
     }
 }
