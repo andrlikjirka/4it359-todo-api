@@ -10,26 +10,24 @@ namespace TodoApp.API.Test;
 
 public class QueryControllerTest
 {
-
     [Fact]
     public async Task PostQuery_MatchingItemsNotExist_ReturnsNotFound()
     {
+        var request = new QueryRequest
+        {
+            Name = "Hello World",
+            Limit = 10
+        };
         var items = new Item[] { };
         var itemRepositoryMock = Substitute.For<IItemRepository>();
-        itemRepositoryMock.FindByQuery(new QueryRequest
-        {
-            Name = "Hello World"
-        }).Returns(items);
+        itemRepositoryMock.FindByQuery(request).Returns(items);
 
         var sut = new QueryController(itemRepositoryMock);
-        var result = await sut.Post(new QueryRequest
-        {
-            Name = "Hello World"
-        });
+        var result = await sut.Post(request);
 
         Assert.IsType<NotFoundResult>(result.Result);
     }
-    
+
     [Fact]
     public async Task PostQuery_MatchingItemsExists_ReturnsItems()
     {
@@ -55,16 +53,16 @@ public class QueryControllerTest
 
         var sut = new QueryController(itemRepositoryMock);
         var result = await sut.Post(request);
-        
+
         Assert.IsType<OkObjectResult>(result.Result);
         var objectResult = (OkObjectResult)result.Result!;
         Assert.Equivalent(matchingItems, objectResult.Value);
     }
 
     [Fact]
-    public async Task GetItems_ItemsWithGivePriorityNotExist_ReturnsNotFound()
+    public async Task Get_ItemsWithGivePriorityNotExist_ReturnsNotFound()
     {
-        var items = new Item[] {} ;
+        var items = new Item[] { };
         var itemRepositoryMock = Substitute.For<IItemRepository>();
         itemRepositoryMock.FindByPriority(1, null).Returns(items);
 
@@ -84,7 +82,7 @@ public class QueryControllerTest
 
         var sut = new QueryController(itemRepositoryMock);
         var result = await sut.Get(3, null);
-        
+
         Assert.IsType<OkObjectResult>(result.Result);
         var returnResult = (OkObjectResult)result.Result!;
         Assert.Equivalent(priorityItems, returnResult.Value);
