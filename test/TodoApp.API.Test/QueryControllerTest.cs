@@ -89,6 +89,7 @@ public class QueryControllerTest
         var result = await sut.Post(request);
         
         Assert.NotEmpty(validationResults);
+        // jak zkontrolovat badrequest? controller stále vrací notfound (i pro nevalidní request)
     }
 
     [Fact]
