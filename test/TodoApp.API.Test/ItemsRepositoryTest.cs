@@ -102,6 +102,7 @@ public class ItemsRepositoryTest
         var result = await sut.Add(item);
         var foundNewItem = await context.Items.FindAsync(item.Id);
 
+        Assert.NotEqual(0, result.Id);
         Assert.Equivalent(item, result);
         Assert.Equivalent(item, foundNewItem);
     }
