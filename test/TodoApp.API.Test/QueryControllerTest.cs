@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
@@ -29,7 +30,7 @@ public class QueryControllerTest
     }
 
     [Fact]
-    public async Task PostQuery_MatchingItemsExists_ReturnsItems()
+    public async Task PostQuery_ValidQuery_MatchingItemsExist_ReturnsItems()
     {
         var request = new QueryRequest
         {
@@ -40,6 +41,10 @@ public class QueryControllerTest
             DueDateTo = DateTime.MaxValue,
             Limit = 10
         };
+        var validationContext = new ValidationContext(request, serviceProvider: null, items: null);
+        var validationResults = new List<ValidationResult>();
+        Validator.TryValidateObject(request, validationContext, validationResults, validateAllProperties: true);
+        
         var items = ItemGenerator.GenerateItems().ToArray();
         var matchingItems = items
             .Where(item => item.Title.ToLower().Contains("Learn".ToLower()))
@@ -54,9 +59,36 @@ public class QueryControllerTest
         var sut = new QueryController(itemRepositoryMock);
         var result = await sut.Post(request);
 
+        Assert.Empty(validationResults);
         Assert.IsType<OkObjectResult>(result.Result);
         var objectResult = (OkObjectResult)result.Result!;
         Assert.Equivalent(matchingItems, objectResult.Value);
+    }
+
+    [Fact]
+    public async Task PostQuery_InvalidQuery_ReturnsBadRequest()
+    {
+        var request = new QueryRequest
+        {
+            Name = "Hello World",
+            ProgressFrom = int.MinValue,
+            ProgressTo = int.MaxValue,
+            DueDateFrom = DateTime.Now,
+            DueDateTo = DateTime.MaxValue,
+            //Limit = 10
+        };
+        var validationContext = new ValidationContext(request, serviceProvider: null, items: null);
+        var validationResults = new List<ValidationResult>();
+        Validator.TryValidateObject(request, validationContext, validationResults, validateAllProperties: true);
+
+        var items = new Item[] { };
+        var itemRepositoryMock = Substitute.For<IItemRepository>();
+        itemRepositoryMock.FindByQuery(request).Returns(items);
+
+        var sut = new QueryController(itemRepositoryMock);
+        var result = await sut.Post(request);
+        
+        Assert.NotEmpty(validationResults);
     }
 
     [Fact]
