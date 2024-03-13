@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TodoApp.Api.Data;
 using TodoApp.Api.Extensions;
+using TodoApp.Api.HostedServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,8 @@ builder.Services
     {
         options.UseInMemoryDatabase(builder.Configuration.GetValue<string>("Database:Name") ?? "default");
     })
-    .AddScoped<IItemRepository, ItemRepository>();
+    .AddScoped<IItemRepository, ItemRepository>()
+    .AddHostedService<TaskCollector>();
 
 var app = builder.Build();
 
