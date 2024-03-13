@@ -13,7 +13,7 @@
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
 <h1 id="web-application-development-on-net-platform">Web application development on .NET platform</h1>
-<h3 id="testing">Testing</h3>
+<h3 id="async-calls-threads-and-backend-services">Async calls, threads and backend services</h3>
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
   mermaid.initialize({ startOnLoad: true });
@@ -22,408 +22,420 @@
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="2" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
+<h1 id="thread-and-concurrent-execution">Thread and concurrent execution</h1>
 <div class="columns"><div class="columns-left">
-<h1 id="cyclomatic-complexity">Cyclomatic complexity</h1>
 <ul>
-<li>hard metric</li>
-<li>number of linearly independent branches
+<li>thread of execution
 <ul>
-<li>branch is a sequence of instructions</li>
+<li>smallest execution unit for OS</li>
 </ul>
 </li>
-<li>exponencial vertically</li>
-<li>bad whatsoever
+<li>allows concurrent execution</li>
+<li>can yield CPU allocation</li>
+<li>OS handles thousands of threads</li>
+<li>too many threads hurt performance
 <ul>
-<li>twice as bad for testing</li>
+<li>OS keeps list of their context</li>
+<li>kernel / user switches clean CPU cache</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ShoppingCart</span>
-{
-    <span class="hljs-keyword">private</span> PaymentProcessor paymentProcessor = <span class="hljs-keyword">new</span> PaymentProcessor();
-    <span class="hljs-keyword">private</span> List&lt;Item&gt; items = <span class="hljs-keyword">new</span> List&lt;Item&gt;();
-    <span class="hljs-keyword">private</span> User user;
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ShoppingCart</span>(<span class="hljs-params">User user</span>)</span>
-    {
-        User = user;
-    }
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Add</span>(<span class="hljs-params">Item item</span>)</span>
-    {
-       <span class="hljs-keyword">if</span> (!items.Contains(ordered =&gt; ordered == item))
-       {
-           items.Add(item);
-       }
-    }
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Remove</span>(<span class="hljs-params">Item item</span>)</span> =&gt; items.TryRemove(item, <span class="hljs-keyword">out</span> _);
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> Order <span class="hljs-title">Checkout</span>()</span>
-    {
-        <span class="hljs-keyword">if</span> (CheckAvailability() &amp;&amp; paymentProcessor.ChargeAndValidate(user))
-        {
-            <span class="hljs-keyword">var</span> order = <span class="hljs-keyword">new</span> Order(items);
-            order.Settle(user);
-            <span class="hljs-keyword">return</span> order;
-        }
-    }
-
-    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">CheckAvailability</span>()</span>
-    {
-        <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> item <span class="hljs-keyword">in</span> items)
-        {
-          <span class="hljs-keyword">if</span> (!item.CheckAvailability()){
-            items.Remove(item);
-          }
-        }
-
-        <span class="hljs-keyword">return</span> items.Any();
-    }
-}
-</code></pre>
+<img src="threads.jpg" />
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="3" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="unit-test">Unit Test</h1>
+<h1 id="task-is-just-a-promise">Task is just a promise</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>one logical body</li>
-<li>proves correctness of the body</li>
-<li>the simpler the better</li>
-<li>maintainable only for low complexity</li>
-<li>fast execution</li>
-<li>high quantity</li>
-<li>tests all branches</li>
-<li>uses test doubles</li>
+<li>a reference</li>
+<li>a callback</li>
+<li>compiler does the heavy lifting</li>
 </ul>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;<span class="hljs-built_in">bool</span>&gt; <span class="hljs-title">AuthorizeUser</span>(<span class="hljs-params">User user</span>)</span>
+{
+    <span class="hljs-keyword">try</span>
+    {
+      <span class="hljs-keyword">var</span> credentials = <span class="hljs-keyword">await</span> credentialManager.GetCredentials(user);
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> authClient.Authenticate(credentials);
+    }
+    <span class="hljs-keyword">catch</span>
+    {
+      <span class="hljs-comment">/*code*/</span>
+    }
+}
+</code></pre>
 </div><div class="columns-right">
-  <img src="tests.png" />
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Task</span>
+{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Start</span>()</span>;
+  <span class="hljs-keyword">public</span> AggregateException? Exception { <span class="hljs-keyword">get</span> { <span class="hljs-comment">/*code*/</span> } }
+  <span class="hljs-keyword">public</span> TaskStatus Status { <span class="hljs-keyword">get</span> { <span class="hljs-comment">/*code*/</span> } }
+  <span class="hljs-keyword">public</span> <span class="hljs-built_in">bool</span> IsCompleted { <span class="hljs-keyword">get</span> { <span class="hljs-comment">/*code*/</span> } }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> TaskAwaiter <span class="hljs-title">GetAwaiter</span>()</span> { <span class="hljs-comment">/*code*/</span> }
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Task</span>&lt;<span class="hljs-title">TResult</span>&gt; : <span class="hljs-title">Task</span>
+{
+  <span class="hljs-keyword">public</span> TResult Result { <span class="hljs-keyword">get</span> { <span class="hljs-comment">/*code*/</span> } }
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">readonly</span> <span class="hljs-keyword">struct</span> TaskAwaiter&lt;TResult&gt; : ICriticalNotifyCompletion, ITaskAwaiter
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">bool</span> IsCompleted =&gt; m_task.IsCompleted;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnCompleted</span>(<span class="hljs-params">Action continuation</span>)</span> { <span class="hljs-comment">/*code*/</span> }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">UnsafeOnCompleted</span>(<span class="hljs-params">Action continuation</span>)</span> { <span class="hljs-comment">/*code*/</span> }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> TResult <span class="hljs-title">GetResult</span>()</span> { <span class="hljs-comment">/*code*/</span> }
+}
+</code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="4" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
+<h1 id="thread-safety-in-aspnet-core">Thread safety in ASP.NET Core</h1>
 <div class="columns"><div class="columns-left">
-<h1 id="integration-test">Integration test</h1>
 <ul>
-<li>whole component scope</li>
-<li>proves defined component behaviour</li>
-<li>still reasonably fast</li>
-<li>tests only selected branches</li>
-<li>uses tests doubles</li>
-<li>bends untested component parts</li>
-<li>petrifies project</li>
+<li>each request runs on a single thread
+<ul>
+<li>transient and scoped services are fine</li>
+</ul>
+</li>
+<li>singleton services may suffer race conditions
+<ul>
+<li>avoid thread specific state</li>
+<li>use HttpContext to store state</li>
+<li>use locks and other thread primitives</li>
+<li>extract state to a scoped service</li>
+</ul>
+</li>
 </ul>
 </div><div class="columns-right">
-  <img src="tests.png" />
+  <img src="threadding.webp" />
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="5" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
 <div class="columns"><div class="columns-left">
-<h1 id="end-to-end-test">end to end test</h1>
+<h1 id="locking">locking</h1>
 <ul>
-<li>user-story scope</li>
-<li>proves edge API works as expected</li>
-<li>slow and expensive</li>
-<li>tests only happy paths</li>
-<li>no doubles, no bends</li>
-<li>test from user perspective</li>
-</ul>
-</div><div class="columns-right">
-  <img src="tests.png" />
-</div></div>
-</section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="6" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
-" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
-;">
-<h1 id="xunit-test-framework">XUnit test framework</h1>
-<div class="columns"><div class="columns-left">
+<li>slow</li>
+<li>tricky to
 <ul>
-<li>created by original NUnit author</li>
-<li>class-first testing
-<ul>
-<li>using constructors for setup</li>
-<li>using Dispose for teardown</li>
-<li>creating a test instance for each test</li>
+<li>reason</li>
+<li>debug</li>
+<li>test</li>
 </ul>
 </li>
-<li>extendable assertion library</li>
+<li>deadlocks</li>
+<li>lifelocks</li>
+<li>use alternatives
+<ul>
+<li>lock-less design</li>
+<li>CAS instruction</li>
+<li>spinlocks</li>
+</ul>
+</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">CalculatorTests</span>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Deadlock</span>
 {
-    [<span class="hljs-meta">Fact</span>]
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">CanAddNumbers</span>()</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">readonly</span> <span class="hljs-built_in">object</span> Lock1 = <span class="hljs-keyword">new</span>();
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">readonly</span> <span class="hljs-built_in">object</span> Lock2 = <span class="hljs-keyword">new</span>();
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Run</span>()</span>
     {
-        <span class="hljs-keyword">var</span> calculator = <span class="hljs-keyword">new</span> Calculator();
-        <span class="hljs-keyword">var</span> result = calculator.Add(<span class="hljs-number">2</span>, <span class="hljs-number">2</span>);
-        Assert.Equal(<span class="hljs-number">4</span>, result);
+        <span class="hljs-keyword">var</span> thread1 = <span class="hljs-keyword">new</span> Thread(() =&gt; RunThreadA(<span class="hljs-string">&quot;Thread 1&quot;</span>));
+        <span class="hljs-keyword">var</span> thread2 = <span class="hljs-keyword">new</span> Thread(() =&gt; RunThreadB(<span class="hljs-string">&quot;Thread 2&quot;</span>));
+
+        thread1.Start();
+        thread2.Start();
+
+        thread1.Join();
+        thread2.Join();
     }
 
-    [<span class="hljs-meta">Theory</span>]
-    [<span class="hljs-meta">InlineData(2, 2, 4)</span>]
-    [<span class="hljs-meta">InlineData(2, -2, 0)</span>]
-    [<span class="hljs-meta">InlineData(-2, -2, -4)</span>]
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">CanAddNumbers</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> a, <span class="hljs-built_in">int</span> b, <span class="hljs-built_in">int</span> expected</span>)</span>
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">RunThreadA</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> threadName</span>)</span>
     {
-        <span class="hljs-keyword">var</span> calculator = <span class="hljs-keyword">new</span> Calculator();
-        <span class="hljs-keyword">var</span> result = calculator.Add(a, b);
-        Assert.Equal(expected, result);
+        <span class="hljs-keyword">lock</span> (Lock1)
+        {
+            Console.WriteLine(  <span class="hljs-string">$&quot;<span class="hljs-subst">{threadName}</span> acquired <span class="hljs-subst">{<span class="hljs-keyword">nameof</span>(Lock1)}</span>&quot;</span>);
+            Thread.Sleep(<span class="hljs-number">100</span>);
+
+            <span class="hljs-keyword">lock</span> (Lock2)
+            {
+                Console.WriteLine(  <span class="hljs-string">$&quot;<span class="hljs-subst">{threadName}</span> acquired <span class="hljs-subst">{<span class="hljs-keyword">nameof</span>(Lock2)}</span>&quot;</span>);
+            }
+        }
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">RunThreadB</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> threadName</span>)</span>
+    {
+        <span class="hljs-keyword">lock</span> (Lock2)
+        {
+            Console.WriteLine(  <span class="hljs-string">$&quot;<span class="hljs-subst">{threadName}</span> acquired <span class="hljs-subst">{<span class="hljs-keyword">nameof</span>(Lock2)}</span>&quot;</span>);
+            Thread.Sleep(<span class="hljs-number">100</span>);
+
+            <span class="hljs-keyword">lock</span> (Lock1)
+            {
+                Console.WriteLine(  <span class="hljs-string">$&quot;<span class="hljs-subst">{threadName}</span> acquired <span class="hljs-subst">{<span class="hljs-keyword">nameof</span>(Lock1)}</span>&quot;</span>);
+            }
+        }
     }
 }
 </code></pre>
 </div></div>
 </section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="6" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="background-services">Background services</h1>
+<div class="columns"><div class="columns-left">
+<ul>
+<li>long runnint jobs
+<ul>
+<li>consuming a queue</li>
+<li>updating service</li>
+</ul>
+</li>
+<li>maintenance purposes</li>
+<li>don't depend on API calls</li>
+<li>use <code>IHostedService</code> interface</li>
+<li>cold-path</li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">CurrentTimeBackgroundService</span> : <span class="hljs-title">BackgroundService</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> ILogger _logger;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">CurrentTimeBackgroundService</span>(<span class="hljs-params">ILogger&lt;CurrentTimeBackgroundService&gt; logger</span>)</span>
+    {
+        _logger = logger;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">ExecuteAsync</span>(<span class="hljs-params">CancellationToken stoppingToken</span>)</span>
+    {
+        <span class="hljs-keyword">while</span> (!stoppingToken.IsCancellationRequested)
+        {
+            _logger.LogInformation(<span class="hljs-string">&quot;Current time: {time}&quot;</span>, DateTimeOffset.Now);
+            <span class="hljs-keyword">await</span> Task.Delay(<span class="hljs-number">1000</span>, stoppingToken);
+        }
+    }
+}
+</code></pre>
+</section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="7" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="test-doubles">Test doubles</h1>
+<h1 id="nuget-packages">NuGet packages</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>stubs
+<li>package manager</li>
+<li>automates package management
 <ul>
-<li>fulfill contract with no real implementation</li>
-<li>usually return the same data whatever comes</li>
+<li>automatic updates</li>
+<li>dependency management</li>
+<li>caches multiple levels</li>
 </ul>
 </li>
-<li>mocks
-<ul>
-<li>pre-programmed or validatable stubs</li>
-<li>most libraries offer mocks</li>
-</ul>
-</li>
-<li>fakes
-<ul>
-<li>have (likely simplified) implementation</li>
-</ul>
-</li>
+<li>NuGet.org has loads of packages</li>
+<li>supported versions</li>
+<li>license terms</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IWeatherService</span> {
-    <span class="hljs-function">WeatherReport <span class="hljs-title">GetWeatherReport</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> location</span>)</span>;
-}
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-zsh"># list all installed packages
 
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">WeatherServiceStub</span> : <span class="hljs-title">IWeatherService</span> {
-    <span class="hljs-function"><span class="hljs-keyword">public</span> WeatherReport <span class="hljs-title">GetWeatherReport</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> location</span>)</span> {
-        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> WeatherReport {
-            Location = location,
-            Temperature = <span class="hljs-number">75</span>, <span class="hljs-comment">// Fixed temperature</span>
-            Condition = <span class="hljs-string">&quot;Sunny&quot;</span>
-        };
-    }
-}
+dotnet list package
 
-<span class="hljs-keyword">var</span> weatherServiceMock = NSubstitute.For&lt;IWeatherService&gt;();
 
-<span class="hljs-keyword">var</span> fakeDbContextOptions = <span class="hljs-keyword">new</span> DbContextOptionsBuilder&lt;YourDbContext&gt;()
-    .UseInMemoryDatabase(databaseName: <span class="hljs-string">&quot;TestDatabase&quot;</span>)
-    .Options;
+# adds or updates a package
+
+dotnet add package Microsoft.EntityFrameworkCore
+
+
+# removes a package
+
+dotnet remove package Microsoft.EntityFrameworkCore
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="8" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="nsubstitute">NSubstitute</h1>
+<h1 id="nuget-version-constraints">NuGet version constraints</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>replaces Moq
+<li>limit applicable versions</li>
+<li>better don't use
 <ul>
-<li>no data collection</li>
+<li>diamond problem</li>
 </ul>
 </li>
-<li>class-first testing
-<ul>
-<li>using constructors for setup</li>
-<li>using Dispose for teardown</li>
-<li>creating a test instance for each test</li>
 </ul>
-</li>
-<li>extendable assertion library</li>
-</ul>
+<div style="width:100%;font-size:14px">
+<table>
+<thead>
+<tr>
+<th>Notation</th>
+<th>Applied rule</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.0</td>
+<td>x ≥ 1.0</td>
+<td>Min version, incl</td>
+</tr>
+<tr>
+<td>[1.0,)</td>
+<td>x ≥ 1.0</td>
+<td>Min version, incl</td>
+</tr>
+<tr>
+<td>(1.0,)</td>
+<td>x &gt; 1.0</td>
+<td>Min version, excl</td>
+</tr>
+<tr>
+<td>[1.0]</td>
+<td>x == 1.0</td>
+<td>Exact version match</td>
+</tr>
+<tr>
+<td>(,1.0]</td>
+<td>x ≤ 1.0</td>
+<td>Max version, incl</td>
+</tr>
+<tr>
+<td>(,1.0)</td>
+<td>x &lt; 1.0</td>
+<td>Max version, excl</td>
+</tr>
+<tr>
+<td>[1.0,2.0]</td>
+<td>1.0 ≤ x ≤ 2.0</td>
+<td>Exact range, incl</td>
+</tr>
+<tr>
+<td>(1.0,2.0)</td>
+<td>1.0 &lt; x &lt; 2.0</td>
+<td>Exact range, excl</td>
+</tr>
+<tr>
+<td>[1.0,2.0)</td>
+<td>1.0 ≤ x &lt; 2.0</td>
+<td>incl min and excl max</td>
+</tr>
+<tr>
+<td>(1.0)</td>
+<td>invalid</td>
+<td>invalid</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">ICalculator</span>
-{
-    <span class="hljs-built_in">string</span> Mode { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
-
-    <span class="hljs-function"><span class="hljs-built_in">int</span> <span class="hljs-title">Add</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> a, <span class="hljs-built_in">int</span> b</span>)</span>;
-    <span class="hljs-function"><span class="hljs-built_in">int</span> <span class="hljs-title">Multiply</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> a, <span class="hljs-built_in">int</span> b</span>)</span>;
-}
-
-calculator.Add(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>).Returns(<span class="hljs-number">3</span>);
-
-Assert.AreEqual(<span class="hljs-number">3</span>, calculator.Add(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)); <span class="hljs-comment">// true</span>
-Assert.AreEqual(<span class="hljs-number">3</span>, calculator.Add(<span class="hljs-number">0</span>, <span class="hljs-number">3</span>)); <span class="hljs-comment">// false</span>
-
-calculator.Add(Arg.Any&lt;<span class="hljs-built_in">int</span>&gt;(), Arg.Any&lt;<span class="hljs-built_in">int</span>&gt;()).Returns(<span class="hljs-number">3</span>);
-
-Assert.AreEqual(<span class="hljs-number">3</span>, calculator.Add(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)); <span class="hljs-comment">// true</span>
-Assert.AreEqual(<span class="hljs-number">3</span>, calculator.Add(<span class="hljs-number">0</span>, <span class="hljs-number">3</span>)); <span class="hljs-comment">// true</span>
-Assert.AreEqual(<span class="hljs-number">3</span>, calculator.Add(<span class="hljs-number">5</span>, <span class="hljs-number">3</span>)); <span class="hljs-comment">// true</span>
-
-calculator.Received(<span class="hljs-number">2</span>).Add(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>);
-calculator.Received(<span class="hljs-number">1</span>).Add(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>); <span class="hljs-comment">// throws</span>
-
-calculator.Mode = <span class="hljs-string">&quot;HEX&quot;</span>;
-
-calculator.Received().Mode = <span class="hljs-string">&quot;HEX&quot;</span>;
-</code></pre>
+<div class="mermaid" style="width:800;">
+graph TD;
+    A(Application) --&gt;|1.1| B(NetForce.HealthChecks)
+    A --&gt;|3.8| C(Microsoft.Identity)
+    B --&gt;|"[1.0]"| D
+    C --&gt;|2.0| D(NewtonSoft.Json)
+    class A,B,C normal;
+    class D conflict;
+</div>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="9" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<div class="columns"><div class="columns-left">
-<h1 id="aspnet-core">ASP.NET Core</h1>
-<ul>
-<li>Server
-<ul>
-<li>Kestrel</li>
-<li>listens to a port</li>
-</ul>
-</li>
-<li>Context
-<ul>
-<li>stores all request data</li>
-</ul>
-</li>
-<li>Pipeline
-<ul>
-<li>process request</li>
-</ul>
-</li>
-</ul>
-</div><div class="columns-right">
-<div class="mermaid" style="width:800;margin-left:-150">
-sequenceDiagram
-    participant Server as Server (Kestrel)
-    participant App as Application
-    participant MW1 as Middleware 1
-    participant MWn as Middleware N
-    Server--&gt;&gt;+App: request
-    App-&gt;&gt;App: initialize HttpContext
-    App--&gt;&gt;+MW1: ProcessRequestAsync
-    MW1-&gt;&gt;+MWn: next
-    MWn--&gt;&gt;-MW1: 
-    MW1--&gt;&gt;-App: 
-    App--&gt;&gt;-Server: response
-</div>
-</div></div>
-</section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="10" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
-" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
-;">
-<h1 id="testing-aspnet-core">Testing ASP.NET Core</h1>
-<div class="columns"><div class="columns-left">
-<ul>
-<li>fakes server part</li>
-<li>HttpContext inserted directly into application</li>
-<li>hooks to override application initialization</li>
-<li>we need an HttpClient</li>
-<li>can't test some aspects</li>
-</ul>
-</div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">IntegrationTests</span> : <span class="hljs-title">WebApplicationFactory</span>&lt;<span class="hljs-title">Startup</span>&gt;
-{
-    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">ConfigureWebHost</span>(<span class="hljs-params">IWebHostBuilder builder</span>)</span>
-    {
-        builder.ConfigureServices(services =&gt;
-        {
-            <span class="hljs-comment">// Configure services for testing if needed</span>
-        });
-    }
-}
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">BasicTests</span> : <span class="hljs-title">IClassFixture</span>&lt;<span class="hljs-title">IntegrationTests</span>&gt;
-{
-    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> HttpClient _client;
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">BasicTests</span>(<span class="hljs-params">IntegrationTests factory</span>)</span>
-    {
-        _client = factory.CreateClient();
-    }
-
-    [<span class="hljs-meta">Fact</span>]
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">HomePage_ShouldReturnSuccessStatusCode</span>()</span>
-    {
-        <span class="hljs-comment">// Arrange</span>
-        <span class="hljs-keyword">var</span> request = <span class="hljs-string">&quot;/&quot;</span>; <span class="hljs-comment">// URL to test</span>
-
-        <span class="hljs-comment">// Act</span>
-        <span class="hljs-keyword">var</span> response = <span class="hljs-keyword">await</span> _client.GetAsync(request);
-
-        <span class="hljs-comment">// Assert</span>
-        response.EnsureSuccessStatusCode(); <span class="hljs-comment">// Status Code 200-299</span>
-    }
-}
-</code></pre>
-</div></div>
-</section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="11" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
-" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
-;">
 <h1 id="exercise">exercise</h1>
 <ul>
 <li>pull forked repository <code>exercises</code></li>
-<li>ensure you merged your exercise to <code>week03</code> branch</li>
-<li>create your branch on top of updated <code>week03</code> branch</li>
-<li>basically, write tests for your implementation
+<li>ensure you merged your exercise to <code>week05</code> branch</li>
+<li>create your branch on top of updated <code>week05</code> branch</li>
+<li>create a backend service to
 <ul>
-<li>unit tests</li>
-<li>integration tests</li>
-<li>end to end tests</li>
+<li>mark incomplete past due todo items as priority 1</li>
+<li>mark incomplete due today todo items as priority 2</li>
+<li>mark incomplete due tomorrow todo items as priority 3</li>
 </ul>
 </li>
+<li>write tests for the backend service</li>
 <li>push and create a pull request</li>
 <li>let others review or find someone to do so</li>
 </ul>
 </section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="12" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="10" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
 <h1 id="thank-you">Thank you!</h1>
 </section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="13" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="11" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="to-test-or-not-to-test">To test or not to test?</h1>
 <div class="columns"><div class="columns-left">
+<h1 id="useful-tools">Useful tools</h1>
 <ul>
-<li>
-<p>testing costs money</p>
+<li>Postman
 <ul>
-<li>development time</li>
+<li>REST client</li>
 </ul>
 </li>
-<li>
-<p>testing saves money</p>
+<li>Fiddler
 <ul>
-<li>bugs and regression caching</li>
-<li>testing in production is EVIL!!!</li>
+<li>intercepts network calls</li>
 </ul>
 </li>
-<li>
-<p>testing forces good code structure</p>
+<li>LINQPad
 <ul>
-<li>hacks are tough to test</li>
-<li>mockable allocations</li>
+<li>prototyping LINQ queries</li>
 </ul>
 </li>
-<li>
-<p>what is the complexity testers face?</p>
+<li>PowerShell Core
 <ul>
-<li>almost undoable for big tech</li>
+<li>multiplatform, nice gallery</li>
+</ul>
+</li>
+<li>dotPeek by JetBrains
+<ul>
+<li>C# decompiler</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-<img src="chernobyl.jpg" />
+<h1 id="useful-vs-code-plugins">Useful VS Code plugins</h1>
+<ul>
+<li>GitLens
+<ul>
+<li>more git features</li>
+</ul>
+</li>
+<li>Mermaid
+<ul>
+<li>create charts by code</li>
+</ul>
+</li>
+<li>MARP for VS Code
+<ul>
+<li>Markdown presentations</li>
+</ul>
+</li>
+<li>PowerShell
+<ul>
+<li>almost IDE feeling</li>
+</ul>
+</li>
+<li>Copilot
+<ul>
+<li>trained on GitHub</li>
+</ul>
+</li>
+</ul>
 </div></div>
 </section>
 <script>!function(){"use strict";const t={h1:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"1"},style:"display: block; font-size: 2em; margin-block-start: 0.67em; margin-block-end: 0.67em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h2:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"2"},style:"display: block; font-size: 1.5em; margin-block-start: 0.83em; margin-block-end: 0.83em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h3:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"3"},style:"display: block; font-size: 1.17em; margin-block-start: 1em; margin-block-end: 1em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h4:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"4"},style:"display: block; margin-block-start: 1.33em; margin-block-end: 1.33em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h5:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"5"},style:"display: block; font-size: 0.83em; margin-block-start: 1.67em; margin-block-end: 1.67em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h6:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"6"},style:"display: block; font-size: 0.67em; margin-block-start: 2.33em; margin-block-end: 2.33em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},span:{proto:()=>HTMLSpanElement},pre:{proto:()=>HTMLElement,style:"display: block; font-family: monospace; white-space: pre; margin: 1em 0; --marp-auto-scaling-white-space: pre;"}},e="data-marp-auto-scaling-wrapper",i="data-marp-auto-scaling-svg",n="data-marp-auto-scaling-container";class s extends HTMLElement{constructor(){super(),this.svgPreserveAspectRatio="xMinYMid meet";const t=t=>([e])=>{const{width:i,height:n}=e.contentRect;this[t]={width:i,height:n},this.updateSVGRect()};this.attachShadow({mode:"open"}),this.containerObserver=new ResizeObserver(t("containerSize")),this.wrapperObserver=new ResizeObserver(((...e)=>{t("wrapperSize")(...e),this.flushSvgDisplay()}))}static get observedAttributes(){return["data-downscale-only"]}connectedCallback(){var t,s,o,r,a;this.shadowRoot.innerHTML=`\n<style>\n  svg[${i}] { display: block; width: 100%; height: auto; vertical-align: top; }\n  span[${n}] { display: table; white-space: var(--marp-auto-scaling-white-space, nowrap); width: max-content; }\n</style>\n<div ${e}>\n  <svg part="svg" ${i}>\n    <foreignObject><span ${n}><slot></slot></span></foreignObject>\n  </svg>\n</div>\n    `.split(/\n\s*/).join(""),this.wrapper=null!==(t=this.shadowRoot.querySelector(`div[${e}]`))&&void 0!==t?t:void 0;const l=this.svg;this.svg=null!==(o=null===(s=this.wrapper)||void 0===s?void 0:s.querySelector(`svg[${i}]`))&&void 0!==o?o:void 0,this.svg!==l&&(this.svgComputedStyle=this.svg?window.getComputedStyle(this.svg):void 0),this.container=null!==(a=null===(r=this.svg)||void 0===r?void 0:r.querySelector(`span[${n}]`))&&void 0!==a?a:void 0,this.observe()}disconnectedCallback(){this.svg=void 0,this.svgComputedStyle=void 0,this.wrapper=void 0,this.container=void 0,this.observe()}attributeChangedCallback(){this.observe()}flushSvgDisplay(){const{svg:t}=this;t&&(t.style.display="inline",requestAnimationFrame((()=>{t.style.display=""})))}observe(){this.containerObserver.disconnect(),this.wrapperObserver.disconnect(),this.wrapper&&this.wrapperObserver.observe(this.wrapper),this.container&&this.containerObserver.observe(this.container),this.svgComputedStyle&&this.observeSVGStyle(this.svgComputedStyle)}observeSVGStyle(t){const e=()=>{const i=(()=>{const e=t.getPropertyValue("--preserve-aspect-ratio");if(e)return e.trim();return`x${(({textAlign:t,direction:e})=>{if(t.endsWith("left"))return"Min";if(t.endsWith("right"))return"Max";if("start"===t||"end"===t){let i="rtl"===e;return"end"===t&&(i=!i),i?"Max":"Min"}return"Mid"})(t)}YMid meet`})();i!==this.svgPreserveAspectRatio&&(this.svgPreserveAspectRatio=i,this.updateSVGRect()),t===this.svgComputedStyle&&requestAnimationFrame(e)};e()}updateSVGRect(){var t,e,i,n,s,o,r;let a=Math.ceil(null!==(e=null===(t=this.containerSize)||void 0===t?void 0:t.width)&&void 0!==e?e:0);const l=Math.ceil(null!==(n=null===(i=this.containerSize)||void 0===i?void 0:i.height)&&void 0!==n?n:0);void 0!==this.dataset.downscaleOnly&&(a=Math.max(a,null!==(o=null===(s=this.wrapperSize)||void 0===s?void 0:s.width)&&void 0!==o?o:0));const c=null===(r=this.svg)||void 0===r?void 0:r.querySelector(":scope > foreignObject");if(null==c||c.setAttribute("width",`${a}`),null==c||c.setAttribute("height",`${l}`),this.svg&&(this.svg.setAttribute("viewBox",`0 0 ${a} ${l}`),this.svg.setAttribute("preserveAspectRatio",this.svgPreserveAspectRatio),this.svg.style.height=a<=0||l<=0?"0":""),this.container){const t=this.svgPreserveAspectRatio.toLowerCase();this.container.style.marginLeft=t.startsWith("xmid")||t.startsWith("xmax")?"auto":"0",this.container.style.marginRight=t.startsWith("xmi")?"auto":"0"}}}const o=(t,{attrs:e={},style:i})=>class extends t{constructor(...t){super(...t);for(const[t,i]of Object.entries(e))this.hasAttribute(t)||this.setAttribute(t,i);this.attachShadow({mode:"open"})}static get observedAttributes(){return["data-auto-scaling"]}connectedCallback(){this._update()}attributeChangedCallback(){this._update()}_update(){const t=i?`<style>:host { ${i} }</style>`:"";let e="<slot></slot>";const{autoScaling:n}=this.dataset;if(void 0!==n){e=`<marp-auto-scaling exportparts="svg:auto-scaling" ${"downscale-only"===n?"data-downscale-only":""}>${e}</marp-auto-scaling>`}this.shadowRoot.innerHTML=t+e}};let r;const a=Symbol();let l;const c="marpitSVGPolyfill:setZoomFactor,",d=Symbol(),g=Symbol();const h=()=>{const t="Apple Computer, Inc."===navigator.vendor,e=t?[u]:[],i={then:e=>(t?(async()=>{if(void 0===l){const t=document.createElement("canvas");t.width=10,t.height=10;const e=t.getContext("2d"),i=new Image(10,10),n=new Promise((t=>{i.addEventListener("load",(()=>t()))}));i.crossOrigin="anonymous",i.src="data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%2210%22%20viewBox%3D%220%200%201%201%22%3E%3CforeignObject%20width%3D%221%22%20height%3D%221%22%20requiredExtensions%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxhtml%22%3E%3Cdiv%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxhtml%22%20style%3D%22width%3A%201px%3B%20height%3A%201px%3B%20background%3A%20red%3B%20position%3A%20relative%22%3E%3C%2Fdiv%3E%3C%2FforeignObject%3E%3C%2Fsvg%3E",await n,e.drawImage(i,0,0),l=e.getImageData(5,5,1,1).data[3]<128}return l})().then((t=>{null==e||e(t?[u]:[])})):null==e||e([]),i)};return Object.assign(e,i)};let p,m;function u(t){const e="object"==typeof t&&t.target||document,i="object"==typeof t?t.zoom:t;window[g]||(Object.defineProperty(window,g,{configurable:!0,value:!0}),document.body.style.zoom=1.0001,document.body.offsetHeight,document.body.style.zoom=1,window.addEventListener("message",(({data:t,origin:e})=>{if(e===window.origin)try{if(t&&"string"==typeof t&&t.startsWith(c)){const[,e]=t.split(","),i=Number.parseFloat(e);Number.isNaN(i)||(m=i)}}catch(t){console.error(t)}})));let n=!1;Array.from(e.querySelectorAll("svg[data-marpit-svg]"),(t=>{var e,s,o,r;t.style.transform||(t.style.transform="translateZ(0)");const a=i||m||t.currentScale||1;p!==a&&(p=a,n=a);const l=t.getBoundingClientRect(),{length:c}=t.children;for(let i=0;i<c;i+=1){const n=t.children[i];if(n.getScreenCTM){const t=n.getScreenCTM();if(t){const i=null!==(s=null===(e=n.x)||void 0===e?void 0:e.baseVal.value)&&void 0!==s?s:0,c=null!==(r=null===(o=n.y)||void 0===o?void 0:o.baseVal.value)&&void 0!==r?r:0,d=n.children.length;for(let e=0;e<d;e+=1){const s=n.children[e];if("SECTION"===s.tagName){const{style:e}=s;e.transformOrigin||(e.transformOrigin=`${-i}px ${-c}px`),e.transform=`scale(${a}) matrix(${t.a}, ${t.b}, ${t.c}, ${t.d}, ${t.e-l.left}, ${t.f-l.top}) translateZ(0.0001px)`;break}}}}}})),!1!==n&&Array.from(e.querySelectorAll("iframe"),(({contentWindow:t})=>{null==t||t.postMessage(`${c}${n}`,"null"===window.origin?"*":window.origin)}))}function v({once:t=!1,target:e=document}={}){const i=function(t=document){if(t[d])return t[d];let e=!0;const i=()=>{e=!1,delete t[d]};Object.defineProperty(t,d,{configurable:!0,value:i});let n=[],s=!1;(async()=>{try{n=await h()}finally{s=!0}})();const o=()=>{for(const e of n)e({target:t});s&&0===n.length||e&&window.requestAnimationFrame(o)};return o(),i}(e);return t?(i(),()=>{}):i}p=1,m=void 0;const b=Symbol(),w=(e=document)=>{if("undefined"==typeof window)throw new Error("Marp Core's browser script is valid only in browser context.");if(((e=document)=>{const i=window[a];i||customElements.define("marp-auto-scaling",s);for(const n of Object.keys(t)){const s=`marp-${n}`,a=t[n].proto();null!=r||(r=!!document.createElement("div",{is:"marp-auto-scaling"}).outerHTML.startsWith("<div is")),r&&a!==HTMLElement?i||customElements.define(s,o(a,{style:t[n].style}),{extends:n}):(i||customElements.define(s,o(HTMLElement,t[n])),e.querySelectorAll(`${n}[is="${s}"]`).forEach((t=>{t.outerHTML=t.outerHTML.replace(new RegExp(`^<${n}`,"i"),`<${s}`).replace(new RegExp(`</${n}>$`,"i"),`</${s}>`)})))}window[a]=!0})(e),e[b])return e[b];const i=v({target:e}),n=()=>{i(),delete e[b]},l=Object.assign(n,{cleanup:n,update:()=>w(e)});return Object.defineProperty(e,b,{configurable:!0,value:l}),l},y=document.currentScript;w(y?y.getRootNode():document)}();
