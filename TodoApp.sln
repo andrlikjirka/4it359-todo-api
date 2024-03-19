@@ -1,9 +1,9 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{56914A2B-724F-4E24-AD81-C1ACBA396BC3}") = "TodoApp.API", "TodoApp.API/TodoApp.API.csproj", "{2A2429FA-C524-4279-B1D8-FC084158F548}"
+Project("{56914A2B-724F-4E24-AD81-C1ACBA396BC3}") = "TodoApp.API", "src\TodoApp.API/TodoApp.API.csproj", "{2A2429FA-C524-4279-B1D8-FC084158F548}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApp.API.Test", "test\TodoApp.API.Test\TodoApp.API.Test.csproj", "{83508ECB-5E9B-41BF-BD79-0BD61CEEF0C9}"
 EndProject
