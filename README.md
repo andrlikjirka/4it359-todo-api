@@ -13,7 +13,7 @@ Add response body to inform caller what's wrong.
 ```json
 {
   "error": {
-    "message": "The request body is too long. Allowed maximum is 500, but the request had <value>.",
+    "message": "The request body is too long. Allowed maximum is 500, but the request had <value>."
   }
 }
 ```
