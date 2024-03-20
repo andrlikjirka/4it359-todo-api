@@ -136,6 +136,36 @@ public class ItemsApiTest : IClassFixture<WebApplicationFactory<Program>>
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
     
+    [Fact]
+    public async Task Post_BodyTooLong_Returns413()
+    {
+        var request = new CreateItemRequest
+        {
+            Title = GenerateLongBody(),
+            Priority = 1,
+            Progress = 50,
+            DueDate = DateTime.Now
+        };
+        var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+
+        var response = await _client.PostAsync("/api/items", content);
+
+        Assert.Equal(HttpStatusCode.RequestEntityTooLarge, response.StatusCode);
+    }
+
+    private static string GenerateLongBody()
+    {
+        const string baseString = "Lorem Ipsum";
+        StringBuilder sb = new StringBuilder();
+
+        while (sb.Length < 500)
+        {
+            sb.Append(baseString);
+        }
+
+        return sb.ToString();
+    }
+    
     private T? Deserialize<T>(string json)
     {
         return JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions(){PropertyNameCaseInsensitive = true});

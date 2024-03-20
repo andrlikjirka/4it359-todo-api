@@ -1,18 +1,21 @@
 ## Exercise for this week
 
-Implement a background service.
-The service should filter all incomplete todo items and then:
-
-- mark all past due todo items as priority 1
-- mark all due today todo items as priority 2
-- mark all due tomorrow todo items as priority 3
-
-The service should do its job each 5 seconds (it would be hours in reality, however, with seconds we will see results faster).
+Implement a middleware to check if body of the request isn't too big.
+For our purposes, request content length shouldn't be bigger than 500 characters.
+If it is, short-circuit the pipeline and return 413 immediately.
 
 ## Bonus
 
 <details>
 
-If you're confident in writing tests, write some tests for the background service you'll have implemented.
+Add response body to inform caller what's wrong.
+
+```json
+{
+  "error": {
+    "message": "The request body is too long. Allowed maximum is 500, but the request had <value>.",
+  }
+}
+```
 
 </details>
