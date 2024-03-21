@@ -26,7 +26,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\TodoApp.API\TodoApp.API.csproj" />
-      <ProjectReference Include="..\..\TodoApp.API\TodoApp.API.csproj" />
     </ItemGroup>
 
 </Project>
