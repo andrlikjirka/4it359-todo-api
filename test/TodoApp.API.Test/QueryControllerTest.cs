@@ -45,14 +45,18 @@ public class QueryControllerTest
         var validationResults = new List<ValidationResult>();
         Validator.TryValidateObject(request, validationContext, validationResults, validateAllProperties: true);
         
-        var items = ItemGenerator.GenerateItems().ToArray();
-        var matchingItems = items
-            .Where(item => item.Title.ToLower().Contains("Learn".ToLower()))
-            .Where(item => item.Progress > 20)
-            .Where(item => item.Progress < 80)
-            .Where(item => item.DueDate > DateTime.Now)
-            .Where(item => item.DueDate < DateTime.MaxValue)
-            .ToArray();
+        Item[] matchingItems;
+        do
+        {
+            var items = ItemGenerator.GenerateItems().ToArray();
+            matchingItems = items
+                .Where(item => item.Title.ToLower().Contains("Learn".ToLower()))
+                .Where(item => item.Progress > 20)
+                .Where(item => item.Progress < 80)
+                .Where(item => item.DueDate > DateTime.Now)
+                .Where(item => item.DueDate < DateTime.MaxValue)
+                .ToArray();
+        } while (matchingItems.Length == 0);
         var itemRepositoryMock = Substitute.For<IItemRepository>();
         itemRepositoryMock.FindByQuery(request).Returns(matchingItems);
 
