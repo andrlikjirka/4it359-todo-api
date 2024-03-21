@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using TodoApp.Api.Controllers;
@@ -7,7 +6,7 @@ using TodoApp.Api.Data;
 using TodoApp.Api.Helpers;
 using TodoApp.Api.Messages;
 
-namespace TodoApp.API.Test;
+namespace TodoApp.API.Test.ControllersTests;
 
 public class QueryControllerTest
 {
@@ -44,15 +43,20 @@ public class QueryControllerTest
         var validationContext = new ValidationContext(request, serviceProvider: null, items: null);
         var validationResults = new List<ValidationResult>();
         Validator.TryValidateObject(request, validationContext, validationResults, validateAllProperties: true);
+
+        Item[] matchingItems;
+        do
+        {
+            var items = ItemGenerator.GenerateItems().ToArray();
+            matchingItems = items
+                .Where(item => item.Title.ToLower().Contains("Learn".ToLower()))
+                .Where(item => item.Progress > 20)
+                .Where(item => item.Progress < 80)
+                .Where(item => item.DueDate > DateTime.Now)
+                .Where(item => item.DueDate < DateTime.MaxValue)
+                .ToArray();
+        } while (matchingItems.Length == 0);
         
-        var items = ItemGenerator.GenerateItems().ToArray();
-        var matchingItems = items
-            .Where(item => item.Title.ToLower().Contains("Learn".ToLower()))
-            .Where(item => item.Progress > 20)
-            .Where(item => item.Progress < 80)
-            .Where(item => item.DueDate > DateTime.Now)
-            .Where(item => item.DueDate < DateTime.MaxValue)
-            .ToArray();
         var itemRepositoryMock = Substitute.For<IItemRepository>();
         itemRepositoryMock.FindByQuery(request).Returns(matchingItems);
 

@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TodoApp.Api.Data;
 using TodoApp.Api.Messages;
 
-namespace TodoApp.API.IntegrationTest;
+namespace TodoApp.API.IntegrationTest.ControllersTests;
 
 public class QueryApiTest : IClassFixture<WebApplicationFactory<Program>>
 {

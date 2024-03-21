@@ -7,14 +7,14 @@ using TodoApp.Api.Data;
 using TodoApp.Api.Helpers;
 using TodoApp.Api.Messages;
 
-namespace TodoApp.API.IntegrationTest;
+namespace TodoApp.API.IntegrationTest.ControllersTests;
 
 public class ItemsApiTest : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
 
-    public ItemsApiTest(WebApplicationFactory<Program> factory)
+    public ItemsApiTest (WebApplicationFactory<Program> factory)
     {
         _factory = factory;
         _client = factory.CreateClient();

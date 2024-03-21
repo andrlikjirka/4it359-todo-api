@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using TodoApp.Api.Controllers;
@@ -6,7 +5,7 @@ using TodoApp.Api.Data;
 using TodoApp.Api.Helpers;
 using TodoApp.Api.Messages;
 
-namespace TodoApp.API.Test;
+namespace TodoApp.API.Test.ControllersTests;
 
 public class ItemControllerTest
 {

@@ -3,7 +3,7 @@ using TodoApp.Api.Data;
 using TodoApp.Api.Helpers;
 using TodoApp.Api.Messages;
 
-namespace TodoApp.API.Test;
+namespace TodoApp.API.Test.DataTests;
 
 public class ItemsRepositoryTest
 {
