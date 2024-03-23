@@ -2,6 +2,7 @@
 using TodoApp.Api.Data;
 using TodoApp.Api.Extensions;
 using TodoApp.Api.HostedServices;
+using TodoApp.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
+app.UseMiddleware<RequestBodyLengthMiddleware>();
 app.MapControllers();
 app.SeedData();
 
