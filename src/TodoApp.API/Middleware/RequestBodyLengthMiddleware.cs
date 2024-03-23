@@ -17,13 +17,13 @@ public class RequestBodyLengthMiddleware
     {
         //using var reader = new StreamReader(context.Request.Body);
         //var body = await reader.ReadToEndAsync();
-        
-        if (context.Request.ContentLength > 500)
+        var contentLength = context.Request.Headers.ContentLength;
+        if (contentLength > 500)
         {
             context.Response.StatusCode = 413;
             var responseObject = new
             {
-                error = $"The request body is too long. Allowed maximum is 500, but the request had {context.Request.ContentLength}.",
+                error = $"The request body is too long. Allowed maximum is 500, but the request had {contentLength}.",
             };
             var response = JsonSerializer.Serialize(responseObject);
             context.Response.ContentType = "application/json";
