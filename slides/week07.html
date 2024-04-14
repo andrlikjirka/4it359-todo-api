@@ -13,7 +13,7 @@
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
 <h1 id="web-application-development-on-net-platform">Web application development on .NET platform</h1>
-<h3 id="async-calls-threads-and-backend-services">Async calls, threads and backend services</h3>
+<h3 id="configuration-routing-health-checks">Configuration, routing, health checks</h3>
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
   mermaid.initialize({ startOnLoad: true });
@@ -22,421 +22,652 @@
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="2" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="thread-and-concurrent-execution">Thread and concurrent execution</h1>
+<h1 id="configuration">Configuration</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>thread of execution
+<li>runtime parameters
 <ul>
-<li>smallest execution unit for OS</li>
-</ul>
-</li>
-<li>allows concurrent execution</li>
-<li>can yield CPU allocation</li>
-<li>OS handles thousands of threads</li>
-<li>too many threads hurt performance
-<ul>
-<li>OS keeps list of their context</li>
-<li>kernel / user switches clean CPU cache</li>
+<li>deployment specific</li>
+<li>system synchronization</li>
+<li>disaster recovery</li>
+<li>security</li>
+<li>server identification</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-<img src="threads.jpg" />
+<img src="config-illustration.webp" />
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="3" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="task-is-just-a-promise">Task is just a promise</h1>
+<h1 id="configuration-in-aspnet">Configuration in ASP.NET</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>a reference</li>
-<li>a callback</li>
-<li>compiler does the heavy lifting</li>
+<li>
+<p>POCO class</p>
+<ul>
+<li>declare properties</li>
 </ul>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;<span class="hljs-built_in">bool</span>&gt; <span class="hljs-title">AuthorizeUser</span>(<span class="hljs-params">User user</span>)</span>
-{
-    <span class="hljs-keyword">try</span>
-    {
-      <span class="hljs-keyword">var</span> credentials = <span class="hljs-keyword">await</span> credentialManager.GetCredentials(user);
-      <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> authClient.Authenticate(credentials);
-    }
-    <span class="hljs-keyword">catch</span>
-    {
-      <span class="hljs-comment">/*code*/</span>
-    }
-}
-</code></pre>
+</li>
+<li>
+<p>sources</p>
+<ul>
+<li>provide raw values</li>
+<li>file, remote server, environment variables</li>
+</ul>
+</li>
+<li>
+<p>consumers</p>
+<ul>
+<li>IOptions</li>
+<li>IOptionsSnapshot</li>
+<li>IOptionsMonitor</li>
+</ul>
+</li>
+</ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Task</span>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TelemetryOptions</span>
 {
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Start</span>()</span>;
-  <span class="hljs-keyword">public</span> AggregateException? Exception { <span class="hljs-keyword">get</span> { <span class="hljs-comment">/*code*/</span> } }
-  <span class="hljs-keyword">public</span> TaskStatus Status { <span class="hljs-keyword">get</span> { <span class="hljs-comment">/*code*/</span> } }
-  <span class="hljs-keyword">public</span> <span class="hljs-built_in">bool</span> IsCompleted { <span class="hljs-keyword">get</span> { <span class="hljs-comment">/*code*/</span> } }
-  <span class="hljs-function"><span class="hljs-keyword">public</span> TaskAwaiter <span class="hljs-title">GetAwaiter</span>()</span> { <span class="hljs-comment">/*code*/</span> }
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Region { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Location { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> ServerUrl { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> ApiKey { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
 }
 
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Task</span>&lt;<span class="hljs-title">TResult</span>&gt; : <span class="hljs-title">Task</span>
-{
-  <span class="hljs-keyword">public</span> TResult Result { <span class="hljs-keyword">get</span> { <span class="hljs-comment">/*code*/</span> } }
-}
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">readonly</span> <span class="hljs-keyword">struct</span> TaskAwaiter&lt;TResult&gt; : ICriticalNotifyCompletion, ITaskAwaiter
-{
-    <span class="hljs-keyword">public</span> <span class="hljs-built_in">bool</span> IsCompleted =&gt; m_task.IsCompleted;
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnCompleted</span>(<span class="hljs-params">Action continuation</span>)</span> { <span class="hljs-comment">/*code*/</span> }
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">UnsafeOnCompleted</span>(<span class="hljs-params">Action continuation</span>)</span> { <span class="hljs-comment">/*code*/</span> }
-    <span class="hljs-function"><span class="hljs-keyword">public</span> TResult <span class="hljs-title">GetResult</span>()</span> { <span class="hljs-comment">/*code*/</span> }
-}
+<span class="hljs-comment">// program.cs</span>
+builder.Services.Configure&lt;TelemetryOptions&gt;(
+  builder.Configuration.GetSection(<span class="hljs-string">&quot;Telemetry&quot;</span>));
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="4" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="thread-safety-in-aspnet-core">Thread safety in ASP.NET Core</h1>
+<h1 id="configuration-sources">Configuration sources</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>each request runs on a single thread
+<li>provides raw configuration values</li>
+<li>latter overrides former</li>
+<li>customization
 <ul>
-<li>transient and scoped services are fine</li>
-</ul>
-</li>
-<li>singleton services may suffer race conditions
-<ul>
-<li>avoid thread specific state</li>
-<li>use HttpContext to store state</li>
-<li>use locks and other thread primitives</li>
-<li>extract state to a scoped service</li>
+<li>IConfigurationSource</li>
+<li>IConfigurationProvider</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-  <img src="threadding.webp" />
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">
+<span class="hljs-keyword">var</span> builder = WebApplication.CreateBuilder(args);
+
+<span class="hljs-comment">// JSON file provider</span>
+builder.Configuration.AddJsonFile(
+  <span class="hljs-string">$&quot;appsettings.<span class="hljs-subst">{builder.Environment.EnvironmentName}</span>.json&quot;</span>, <span class="hljs-literal">true</span>);
+
+<span class="hljs-comment">// environmental variables provider</span>
+<span class="hljs-comment">// TelemetryOptions__Region = &quot;West Europe&quot;</span>
+<span class="hljs-comment">// =&gt; {&quot;TelemetryOptions&quot;: {&quot;Region&quot;: &quot;West Europe&quot;}}</span>
+builder.Configuration.AddEnvironmentVariables()
+
+<span class="hljs-comment">// --Logging:LogLevel=Warning</span>
+builder.Configuration.AddCommandLine(args)
+
+<span class="hljs-comment">// dotnet user-secrets set &quot;Movies:ServiceApiKey&quot; &quot;12345&quot;</span>
+builder.Configuration.AddUserSecrets&lt;Program&gt;()
+
+
+builder.Configuration.AddAzureKeyVault(
+    <span class="hljs-keyword">new</span> Uri(<span class="hljs-string">$&quot;https://<span class="hljs-subst">{builder.Configuration[<span class="hljs-string">&quot;KeyVaultName&quot;</span>]}</span>.vault.azure.net/&quot;</span>),
+    <span class="hljs-keyword">new</span> DefaultAzureCredential(),
+    <span class="hljs-keyword">new</span> AzureKeyVaultConfigurationOptions
+    {
+        Manager = <span class="hljs-comment">/*your manager needs to know what secrets to use*/</span>
+    });
+
+</code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="5" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
+<h1 id="configuration-sources-1">Configuration sources</h1>
 <div class="columns"><div class="columns-left">
-<h1 id="locking">locking</h1>
 <ul>
-<li>slow</li>
-<li>tricky to
+<li>provides raw configuration values</li>
+<li>latter overrides former</li>
+<li>customization
 <ul>
-<li>reason</li>
-<li>debug</li>
-<li>test</li>
-</ul>
-</li>
-<li>deadlocks</li>
-<li>lifelocks</li>
-<li>use alternatives
-<ul>
-<li>lock-less design</li>
-<li>CAS instruction</li>
-<li>spinlocks</li>
+<li>IConfigurationSource</li>
+<li>IConfigurationProvider</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Deadlock</span>
-{
-    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">readonly</span> <span class="hljs-built_in">object</span> Lock1 = <span class="hljs-keyword">new</span>();
-    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">readonly</span> <span class="hljs-built_in">object</span> Lock2 = <span class="hljs-keyword">new</span>();
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Run</span>()</span>
-    {
-        <span class="hljs-keyword">var</span> thread1 = <span class="hljs-keyword">new</span> Thread(() =&gt; RunThreadA(<span class="hljs-string">&quot;Thread 1&quot;</span>));
-        <span class="hljs-keyword">var</span> thread2 = <span class="hljs-keyword">new</span> Thread(() =&gt; RunThreadB(<span class="hljs-string">&quot;Thread 2&quot;</span>));
-
-        thread1.Start();
-        thread2.Start();
-
-        thread1.Join();
-        thread2.Join();
-    }
-
-    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">RunThreadA</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> threadName</span>)</span>
-    {
-        <span class="hljs-keyword">lock</span> (Lock1)
-        {
-            Console.WriteLine(  <span class="hljs-string">$&quot;<span class="hljs-subst">{threadName}</span> acquired <span class="hljs-subst">{<span class="hljs-keyword">nameof</span>(Lock1)}</span>&quot;</span>);
-            Thread.Sleep(<span class="hljs-number">100</span>);
-
-            <span class="hljs-keyword">lock</span> (Lock2)
-            {
-                Console.WriteLine(  <span class="hljs-string">$&quot;<span class="hljs-subst">{threadName}</span> acquired <span class="hljs-subst">{<span class="hljs-keyword">nameof</span>(Lock2)}</span>&quot;</span>);
-            }
-        }
-    }
-
-    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">RunThreadB</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> threadName</span>)</span>
-    {
-        <span class="hljs-keyword">lock</span> (Lock2)
-        {
-            Console.WriteLine(  <span class="hljs-string">$&quot;<span class="hljs-subst">{threadName}</span> acquired <span class="hljs-subst">{<span class="hljs-keyword">nameof</span>(Lock2)}</span>&quot;</span>);
-            Thread.Sleep(<span class="hljs-number">100</span>);
-
-            <span class="hljs-keyword">lock</span> (Lock1)
-            {
-                Console.WriteLine(  <span class="hljs-string">$&quot;<span class="hljs-subst">{threadName}</span> acquired <span class="hljs-subst">{<span class="hljs-keyword">nameof</span>(Lock1)}</span>&quot;</span>);
-            }
-        }
-    }
-}
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;Region&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;North Europe&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;Location&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Netherlands&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;ServerUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://localhost:57589/metrics&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;DefaultUser&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">42</span>
+<span class="hljs-punctuation">}</span>
 </code></pre>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;ServerUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://dl.contoso.com/metrics&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;ApiKey&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fhiogherwjgtziuegt&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-string">&quot;DefaultUser : null
+}
+</span></code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="6" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="background-services">Background services</h1>
+<h1 id="configuration-setup">Configuration setup</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>long runnint jobs
-<ul>
-<li>consuming a queue</li>
-<li>updating service</li>
-</ul>
-</li>
-<li>maintenance purposes</li>
-<li>don't depend on API calls</li>
-<li>use <code>IHostedService</code> interface</li>
-<li>cold-path</li>
+<li>part of services registration</li>
+<li>renew on configuration source change</li>
+<li>direct binding</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">CurrentTimeBackgroundService</span> : <span class="hljs-title">BackgroundService</span>
-{
-    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> ILogger _logger;
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">
+<span class="hljs-comment">// just adds an instance</span>
+services.Configure&lt;TelemetryOptions&gt;();
 
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">CurrentTimeBackgroundService</span>(<span class="hljs-params">ILogger&lt;CurrentTimeBackgroundService&gt; logger</span>)</span>
-    {
-        _logger = logger;
-    }
+<span class="hljs-comment">// programatic configuration</span>
+services.Configure&lt;TelemetryOptions&gt;(options =&gt; options.Region = <span class="hljs-string">&quot;West Europe&quot;</span>);
 
-    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">ExecuteAsync</span>(<span class="hljs-params">CancellationToken stoppingToken</span>)</span>
-    {
-        <span class="hljs-keyword">while</span> (!stoppingToken.IsCancellationRequested)
-        {
-            _logger.LogInformation(<span class="hljs-string">&quot;Current time: {time}&quot;</span>, DateTimeOffset.Now);
-            <span class="hljs-keyword">await</span> Task.Delay(<span class="hljs-number">1000</span>, stoppingToken);
-        }
-    }
-}
+<span class="hljs-comment">// adds instance and maps to configuration</span>
+services.Configure&lt;TelemetryOptions&gt;(
+  builder.Configuration.GetSection(<span class="hljs-string">&quot;Telemetry&quot;</span>));
+
+<span class="hljs-comment">// adds instance and maps to top level configuration</span>
+services.Configure&lt;TelemetryOptions&gt;(builder.Configuration);
+
+<span class="hljs-comment">// direct binding</span>
+<span class="hljs-keyword">var</span> telemetryOptions = <span class="hljs-keyword">new</span> TelemetryOptions();
+builder.Configuration.Bind(telemetryOptions);      <span class="hljs-comment">//  &lt;--- This</span>
+builder.Services.AddSingleton(telemetryOptions);
+
+<span class="hljs-comment">// a bit low level approach</span>
+<span class="hljs-comment">// you get a builder back with several advanced options</span>
+services.AddOptions&lt;TelemetryOptions&gt;()
+  .Configure&lt;LoggingOptions&gt;((tOptions, lOptions =&gt; 
+    tOptions.Location = lOptions.Location);
+  .Bind(Configuration.GetSection(<span class="hljs-string">&quot;Telemetry&quot;</span>))
+
+<span class="hljs-comment">// named options</span>
+services.Configure&lt;TelemetryOptions&gt;(
+  <span class="hljs-string">&quot;prime&quot;</span>, options =&gt; options.Server = <span class="hljs-keyword">new</span> Uri(<span class="hljs-string">&quot;https://prime.com/otel&quot;</span>));
+services.Configure&lt;TelemetryOptions&gt;(
+  <span class="hljs-string">&quot;backup&quot;</span>, options =&gt; options.Server = <span class="hljs-keyword">new</span> Uri(<span class="hljs-string">&quot;https://backup.com/otel&quot;</span>));
 </code></pre>
+</div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="7" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="nuget-packages">NuGet packages</h1>
+<h1 id="ioptions">IOptions</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>package manager</li>
-<li>automates package management
-<ul>
-<li>automatic updates</li>
-<li>dependency management</li>
-<li>caches multiple levels</li>
-</ul>
-</li>
-<li>NuGet.org has loads of packages</li>
-<li>supported versions</li>
-<li>license terms</li>
+<li>configuration POCO wrapper</li>
+<li>can be constructor injected</li>
+<li>doesn't reflect configuration changes</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-zsh"># list all installed packages
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IOptions</span>&lt;<span class="hljs-keyword">out</span> <span class="hljs-title">TOptions</span>&gt; <span class="hljs-keyword">where</span> <span class="hljs-title">TOptions</span> : <span class="hljs-keyword">class</span>
+{
+    TOptions Value { <span class="hljs-keyword">get</span>; }
+}
 
-dotnet list package
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TelemetryService</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> TelemetryOptions _options;
 
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Region =&gt; _options.Region;
 
-# adds or updates a package
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">SomeService</span>(<span class="hljs-params">IOptions&lt;TelemetryOptions&gt; options</span>)</span>
+    {
+        _options = options.Value;
+    }
+}
 
-dotnet add package Microsoft.EntityFrameworkCore
-
-
-# removes a package
-
-dotnet remove package Microsoft.EntityFrameworkCore
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="8" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="nuget-version-constraints">NuGet version constraints</h1>
 <div class="columns"><div class="columns-left">
+<h1 id="ioptionssnapshot">IOptionsSnapshot</h1>
 <ul>
-<li>limit applicable versions</li>
-<li>better don't use
+<li>configuration POCO wrapper</li>
+<li>can be constructor injected
 <ul>
-<li>diamond problem</li>
+<li>injects fresh values</li>
+<li>not for singletons</li>
 </ul>
 </li>
+<li>offers named options</li>
 </ul>
-<div style="width:100%;font-size:14px">
-<table>
-<thead>
-<tr>
-<th>Notation</th>
-<th>Applied rule</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1.0</td>
-<td>x ≥ 1.0</td>
-<td>Min version, incl</td>
-</tr>
-<tr>
-<td>[1.0,)</td>
-<td>x ≥ 1.0</td>
-<td>Min version, incl</td>
-</tr>
-<tr>
-<td>(1.0,)</td>
-<td>x &gt; 1.0</td>
-<td>Min version, excl</td>
-</tr>
-<tr>
-<td>[1.0]</td>
-<td>x == 1.0</td>
-<td>Exact version match</td>
-</tr>
-<tr>
-<td>(,1.0]</td>
-<td>x ≤ 1.0</td>
-<td>Max version, incl</td>
-</tr>
-<tr>
-<td>(,1.0)</td>
-<td>x &lt; 1.0</td>
-<td>Max version, excl</td>
-</tr>
-<tr>
-<td>[1.0,2.0]</td>
-<td>1.0 ≤ x ≤ 2.0</td>
-<td>Exact range, incl</td>
-</tr>
-<tr>
-<td>(1.0,2.0)</td>
-<td>1.0 &lt; x &lt; 2.0</td>
-<td>Exact range, excl</td>
-</tr>
-<tr>
-<td>[1.0,2.0)</td>
-<td>1.0 ≤ x &lt; 2.0</td>
-<td>incl min and excl max</td>
-</tr>
-<tr>
-<td>(1.0)</td>
-<td>invalid</td>
-<td>invalid</td>
-</tr>
-</tbody>
-</table>
-</div>
 </div><div class="columns-right">
-<div class="mermaid" style="width:800;">
-graph TD;
-    A(Application) --&gt;|1.1| B(NetForce.HealthChecks)
-    A --&gt;|3.8| C(Microsoft.Identity)
-    B --&gt;|"[1.0]"| D
-    C --&gt;|2.0| D(NewtonSoft.Json)
-    class A,B,C normal;
-    class D conflict;
-</div>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IOptionsSnapshot</span>&lt;<span class="hljs-keyword">out</span> <span class="hljs-title">TOptions</span>&gt; : <span class="hljs-title">IOptions</span>&lt;<span class="hljs-title">TOptions</span>&gt;
+    <span class="hljs-keyword">where</span> <span class="hljs-title">TOptions</span> : <span class="hljs-keyword">class</span>
+{
+    <span class="hljs-function">TOptions <span class="hljs-title">Get</span>(<span class="hljs-params"><span class="hljs-built_in">string</span>? name</span>)</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">Invoke</span>(<span class="hljs-params">HttpContext context</span>)</span>
+{
+    <span class="hljs-keyword">var</span> options = context.RequestServices
+      .GetRequiredservice&lt;IOptionsSnapshot&lt;TelemetryOptions&gt;&gt;();
+    <span class="hljs-keyword">var</span> region = options.Get(<span class="hljs-string">&quot;prime&quot;</span>).Region;
+    <span class="hljs-keyword">var</span> location = options.Value.Location;
+}
+</code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="9" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="exercise">exercise</h1>
+<div class="columns"><div class="columns-left">
+<h1 id="ioptionsmonitor">IOptionsMonitor</h1>
 <ul>
-<li>pull forked repository <code>exercises</code></li>
-<li>ensure you merged your exercise to <code>week05</code> branch</li>
-<li>create your branch on top of updated <code>week05</code> branch</li>
-<li>create a backend service to
-<ul>
-<li>mark incomplete past due todo items as priority 1</li>
-<li>mark incomplete due today todo items as priority 2</li>
-<li>mark incomplete due tomorrow todo items as priority 3</li>
+<li>configuration POCO wrapper</li>
+<li>can be constructor injected</li>
+<li>reflects configuration changes</li>
+<li>offers named options</li>
+<li>offers onChange callback</li>
 </ul>
-</li>
-<li>write tests for the backend service</li>
-<li>push and create a pull request</li>
-<li>let others review or find someone to do so</li>
-</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IOptionsMonitor</span>&lt;<span class="hljs-keyword">out</span> <span class="hljs-title">TOptions</span>&gt;
+{
+    TOptions CurrentValue { <span class="hljs-keyword">get</span>; }
+
+    <span class="hljs-function">TOptions <span class="hljs-title">Get</span>(<span class="hljs-params"><span class="hljs-built_in">string</span>? name</span>)</span>;
+
+    IDisposable? OnChange(Action&lt;TOptions, <span class="hljs-built_in">string</span>?&gt; listener);
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TelemetryService</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IOptionsMonitor&lt;TelemetryOptions&gt; _options;
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Region =&gt; _options.CurrentValue.Region;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> <span class="hljs-title">GetLocation</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> tier</span>)</span> =&gt; _options.Get(tier).Location;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">SomeService</span>(<span class="hljs-params">IOptionsMonitor&lt;TelemetryOptions&gt; options</span>)</span>
+    {
+        _options = options;
+        options.OnChange += (newValue, name) =&gt; RestartLogger(newValue);
+    }
+}
+</code></pre>
+</div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="10" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="thank-you">Thank you!</h1>
+<h1 id="postconfigure">PostConfigure</h1>
+<div class="columns"><div class="columns-left">
+<ul>
+<li>after all Configure methods called</li>
+<li>the last word
+<ul>
+<li>final overrides</li>
+<li>forcing defaults</li>
+</ul>
+</li>
+<li>syncronization with other services</li>
+<li>conditional configuration</li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">builder.Services.PostConfigure&lt;MessagingOptions&gt;(options =&gt;
+{
+    options.RetryCount = Math.Max(<span class="hljs-number">5</span>, options.RetryCount);
+});
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TelemetryOptionsPostConfigure</span> : <span class="hljs-title">IPostConfigureOptions</span>&lt;<span class="hljs-title">TelemetryOptions</span>&gt;
+{
+    <span class="hljs-keyword">private</span> IOptionsMonitor&lt;LoggingOptions&gt; _loggingOptions;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">MyServiceSettingsPostConfigure</span>(<span class="hljs-params">IOptionsMonitor&lt;LoggingOptions&gt; options</span>)</span>
+    {
+        _telemetryOptions = options;
+    }
+    
+    
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">PostConfigure</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> name, TelemetryOptions options</span>)</span>
+    {
+        options.Location = _loggingOptions.Location;
+    }
+}
+
+services.Configure&lt;TelemetryOptions&gt;(
+    Configuration.GetSection(<span class="hljs-string">&quot;Telemetry&quot;</span>));
+  services
+  .AddSingleton&lt;IPostConfigureOptions&lt;TelemetryOptions&gt;,
+  TelemetryOptionsPostConfigure&gt;();
+</code></pre>
+</div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="11" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
 <div class="columns"><div class="columns-left">
-<h1 id="useful-tools">Useful tools</h1>
+<h1 id="optionsvalidation">OptionsValidation</h1>
 <ul>
-<li>Postman
+<li>validates configuration
 <ul>
-<li>REST client</li>
+<li>on startup</li>
+<li>on first usage</li>
 </ul>
 </li>
-<li>Fiddler
+<li>data annotations</li>
+<li>custom logic</li>
+<li>may cause issues on reconfiguration</li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">MyServiceOptions</span>
+{
+    [<span class="hljs-meta">Required</span>]
+    [<span class="hljs-meta">Url</span>]
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> ServiceEndpoint { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+
+    [<span class="hljs-meta">Range(1, 60)</span>]
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> TimeoutInSeconds { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-number">30</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">ConfigureServices</span>(<span class="hljs-params">IServiceCollection services</span>)</span>
+{
+    services.AddOptions&lt;MyServiceOptions&gt;()
+            .Bind(Configuration.GetSection(<span class="hljs-string">&quot;MyServiceOptions&quot;</span>))
+            .ValidateDataAnnotations();
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">MyServiceOptionsValidation</span> : <span class="hljs-title">IValidateOptions</span>&lt;<span class="hljs-title">MyServiceOptions</span>&gt;
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> ValidateOptionsResult <span class="hljs-title">Validate</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> name, MyServiceOptions options</span>)</span>
+    {
+        <span class="hljs-keyword">var</span> failures = <span class="hljs-keyword">new</span> List&lt;<span class="hljs-built_in">string</span>&gt;();
+
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">string</span>.IsNullOrEmpty(options.ServiceEndpoint))
+        {
+            failures.Add(<span class="hljs-string">$&quot;<span class="hljs-subst">{<span class="hljs-keyword">nameof</span>(options.ServiceEndpoint)}</span> is required.&quot;</span>);
+        }
+
+        <span class="hljs-keyword">if</span> (failures.Count &gt; <span class="hljs-number">0</span>)
+        {
+            <span class="hljs-keyword">return</span> ValidateOptionsResult.Fail(failures);
+        }
+
+        <span class="hljs-keyword">return</span> ValidateOptionsResult.Success;
+    }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">ConfigureServices</span>(<span class="hljs-params">IServiceCollection services</span>)</span>
+{
+    services.AddOptions&lt;MyServiceOptions&gt;()
+            .Bind(Configuration.GetSection(<span class="hljs-string">&quot;MyServiceOptions&quot;</span>))
+            .Validate&lt;MyServiceOptionsValidation&gt;();
+}
+
+services.AddOptions&lt;MyServiceOptions&gt;()
+        .Bind(Configuration.GetSection(<span class="hljs-string">&quot;MyServiceOptions&quot;</span>))
+        .ValidateDataAnnotations()
+        .ValidateOnStart();
+
+</code></pre>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="12" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<div class="columns"><div class="columns-left">
+<h1 id="using-iconfiguration-directly">using IConfiguration directly</h1>
 <ul>
-<li>intercepts network calls</li>
+<li>avoid if possible
+<ul>
+<li>use strongly typed IOptions</li>
 </ul>
 </li>
-<li>LINQPad
+<li>when to use
 <ul>
-<li>prototyping LINQ queries</li>
-</ul>
-</li>
-<li>PowerShell Core
-<ul>
-<li>multiplatform, nice gallery</li>
-</ul>
-</li>
-<li>dotPeek by JetBrains
-<ul>
-<li>C# decompiler</li>
+<li>at startup</li>
+<li>runtime based keys</li>
+<li>locality (take next key, previous etc.)</li>
+<li>need to bind manually</li>
+<li>need to register callbacks</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-<h1 id="useful-vs-code-plugins">Useful VS Code plugins</h1>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IConfiguration</span>
+{
+    <span class="hljs-built_in">string</span>? <span class="hljs-keyword">this</span>[<span class="hljs-built_in">string</span> key] { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+
+    <span class="hljs-function">IConfigurationSection <span class="hljs-title">GetSection</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> key</span>)</span>;
+
+    <span class="hljs-function">IEnumerable&lt;IConfigurationSection&gt; <span class="hljs-title">GetChildren</span>()</span>;
+
+    <span class="hljs-function">IChangeToken <span class="hljs-title">GetReloadToken</span>()</span>;
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">MyService</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IConfiguration _configuration;
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IOptionsMonitor&lt;SecurityOptions&gt; _securityOptions;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">MyService</span>(<span class="hljs-params">IConfiguration configuration,
+      IOptionsMonitor&lt;SecurityOptions&gt; options</span>)</span>
+    {
+        _configuration = configuration;
+        _options = options;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">PrintSettings</span>()</span>
+    {
+        <span class="hljs-keyword">var</span> appKey = _configuration.GetSection(<span class="hljs-string">&quot;Security:Keys&quot;</span>)
+          .GetValue&lt;<span class="hljs-built_in">string</span>&gt;(_securityOptions.CurrentValue.KeyName);
+        <span class="hljs-comment">/*...*/</span>
+    }
+}
+</code></pre>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="13" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="routing">Routing</h1>
+<div class="columns"><div class="columns-left">
 <ul>
-<li>GitLens
+<li>maps requests to endpoints</li>
+<li>template driven</li>
+<li>convention based routing</li>
+<li>attribute based routing</li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">app.UseEndpoints(endpoints =&gt;
+{
+    endpoints.MapControllerRoute(
+        name: <span class="hljs-string">&quot;default&quot;</span>,
+        pattern: <span class="hljs-string">&quot;{controller=Home}/{action=Index}/{id?}&quot;</span>);
+});
+
+
+[<span class="hljs-meta">Route(<span class="hljs-string">&quot;api/[controller]&quot;</span>)</span>]
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ProductsController</span> : <span class="hljs-title">ControllerBase</span>
+{
+    [<span class="hljs-meta">HttpGet(<span class="hljs-string">&quot;{id}&quot;</span>)</span>]
+    <span class="hljs-function"><span class="hljs-keyword">public</span> IActionResult <span class="hljs-title">GetProduct</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> id</span>)</span> { <span class="hljs-comment">/* ... */</span> }
+}
+</code></pre>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="14" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<div class="columns"><div class="columns-left">
+<h1 id="route-parameters">route parameters</h1>
 <ul>
-<li>more git features</li>
+<li>defined by {}
+<ul>
+<li>{controller}/{action}/{id}</li>
 </ul>
 </li>
-<li>Mermaid
+<li>may be optional
 <ul>
-<li>create charts by code</li>
+<li>{controller}/{action}/{id?}</li>
 </ul>
 </li>
-<li>MARP for VS Code
+<li>default values
 <ul>
-<li>Markdown presentations</li>
+<li>{controller=Home}/{action=Index}/{id?}</li>
 </ul>
 </li>
-<li>PowerShell
+</ul>
+</div><div class="columns-right">
 <ul>
-<li>almost IDE feeling</li>
+<li>catch-all parameters
+<ul>
+<li>&quot;Blog/{*slug}&quot;</li>
 </ul>
 </li>
-<li>Copilot
+<li>type constraints
 <ul>
-<li>trained on GitHub</li>
+<li>&quot;{controller=Home}/{action=Index}/{id:int?}&quot;</li>
 </ul>
 </li>
+</ul>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">BlogController</span> : <span class="hljs-title">Controller</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> IActionResult <span class="hljs-title">Post</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> id</span>)</span>
+    {
+        <span class="hljs-keyword">return</span> View(id);
+    }
+}
+</code></pre>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="15" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="health-checks">Health checks</h1>
+<div class="columns"><div class="columns-left">
+<ul>
+<li>reports app state</li>
+<li>used by LBs, orchestrators</li>
+<li></li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">services.AddHealthChecks();
+
+services.AddHealthChecks()
+    .AddSqlServer(connectionString: <span class="hljs-string">&quot;YourConnectionString&quot;</span>);
+
+app.UseEndpoints(endpoints =&gt;
+{
+    endpoints.MapHealthChecks(<span class="hljs-string">&quot;/health&quot;</span>);
+});
+
+</code></pre>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="16" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="custom-health-check">Custom health check</h1>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ExampleHealthCheck</span> : <span class="hljs-title">IHealthCheck</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Task&lt;HealthCheckResult&gt; <span class="hljs-title">CheckHealthAsync</span>(<span class="hljs-params">HealthCheckContext context,
+      CancellationToken cancellationToken = <span class="hljs-keyword">new</span> CancellationToken(</span>))</span>
+    {
+        <span class="hljs-keyword">var</span> healthCheckResultHealthy = <span class="hljs-literal">true</span>;
+
+        <span class="hljs-keyword">if</span> (healthCheckResultHealthy)
+        {
+            <span class="hljs-keyword">return</span> Task.FromResult(HealthCheckResult.Healthy(<span class="hljs-string">&quot;A healthy result.&quot;</span>));
+        }
+
+        <span class="hljs-keyword">return</span> Task.FromResult(HealthCheckResult.Unhealthy(<span class="hljs-string">&quot;An unhealthy result.&quot;</span>));
+    }
+}
+</code></pre>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">services.AddHealthChecks()
+    .AddCheck&lt;ExampleHealthCheck&gt;(<span class="hljs-string">&quot;example_health_check&quot;</span>);
+
+services.AddHealthChecks()
+    .AddCheck&lt;ExampleHealthCheck&gt;(<span class="hljs-string">&quot;example&quot;</span>, tags: <span class="hljs-keyword">new</span>[] { <span class="hljs-string">&quot;ready&quot;</span> });
+
+app.UseEndpoints(endpoints =&gt;
+{
+    endpoints.MapHealthChecks(<span class="hljs-string">&quot;/health&quot;</span>, <span class="hljs-keyword">new</span> HealthCheckOptions
+    {
+        ResponseWriter = <span class="hljs-keyword">async</span> (context, report) =&gt;
+        {
+            context.Response.ContentType = <span class="hljs-string">&quot;application/json&quot;</span>;
+            <span class="hljs-keyword">var</span> response = <span class="hljs-keyword">new</span>
+            { 
+              status = report.Status.ToString(),
+              checks = report.Entries
+                .Select(x =&gt; <span class="hljs-keyword">new</span> { name = x.Key, status = x.Value.Status, exception = x.Value.Exception?.Message ?? <span class="hljs-string">&quot;none&quot;</span>, duration = x.Value.Duration })
+            };
+            <span class="hljs-keyword">await</span> context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+        }
+    });
+});
+</code></pre>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="17" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="exercise">Exercise</h1>
+<ul>
+<li>make the background service configurable:
+<ul>
+<li>option to start it or not at all</li>
+<li>option for sweep interval</li>
+<li>option for lowest priority to remove
+<ul>
+<li>validate its range</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="18" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="should-configuration-ever-change">Should Configuration ever change?</h1>
+<div class="columns"><div class="columns-left">
+<h2 id="yes">yes</h2>
+<ul>
+<li>disaster recovery</li>
+<li>scaling</li>
+<li>logging level</li>
+<li>leader change</li>
+<li>throttling</li>
+</ul>
+</div><div class="columns-right">
+<h1 id="no">no</h1>
+<ul>
+<li>runtime changes arent't tested</li>
+<li>servers under load
+<ul>
+<li>processing customer data</li>
+</ul>
+</li>
+<li>inconsistent configurations</li>
+<li>human error</li>
 </ul>
 </div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="19" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="thank-you">Thank you!</h1>
 </section>
 <script>!function(){"use strict";const t={h1:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"1"},style:"display: block; font-size: 2em; margin-block-start: 0.67em; margin-block-end: 0.67em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h2:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"2"},style:"display: block; font-size: 1.5em; margin-block-start: 0.83em; margin-block-end: 0.83em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h3:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"3"},style:"display: block; font-size: 1.17em; margin-block-start: 1em; margin-block-end: 1em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h4:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"4"},style:"display: block; margin-block-start: 1.33em; margin-block-end: 1.33em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h5:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"5"},style:"display: block; font-size: 0.83em; margin-block-start: 1.67em; margin-block-end: 1.67em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h6:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"6"},style:"display: block; font-size: 0.67em; margin-block-start: 2.33em; margin-block-end: 2.33em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},span:{proto:()=>HTMLSpanElement},pre:{proto:()=>HTMLElement,style:"display: block; font-family: monospace; white-space: pre; margin: 1em 0; --marp-auto-scaling-white-space: pre;"}},e="data-marp-auto-scaling-wrapper",i="data-marp-auto-scaling-svg",n="data-marp-auto-scaling-container";class s extends HTMLElement{constructor(){super(),this.svgPreserveAspectRatio="xMinYMid meet";const t=t=>([e])=>{const{width:i,height:n}=e.contentRect;this[t]={width:i,height:n},this.updateSVGRect()};this.attachShadow({mode:"open"}),this.containerObserver=new ResizeObserver(t("containerSize")),this.wrapperObserver=new ResizeObserver(((...e)=>{t("wrapperSize")(...e),this.flushSvgDisplay()}))}static get observedAttributes(){return["data-downscale-only"]}connectedCallback(){var t,s,o,r,a;this.shadowRoot.innerHTML=`\n<style>\n  svg[${i}] { display: block; width: 100%; height: auto; vertical-align: top; }\n  span[${n}] { display: table; white-space: var(--marp-auto-scaling-white-space, nowrap); width: max-content; }\n</style>\n<div ${e}>\n  <svg part="svg" ${i}>\n    <foreignObject><span ${n}><slot></slot></span></foreignObject>\n  </svg>\n</div>\n    `.split(/\n\s*/).join(""),this.wrapper=null!==(t=this.shadowRoot.querySelector(`div[${e}]`))&&void 0!==t?t:void 0;const l=this.svg;this.svg=null!==(o=null===(s=this.wrapper)||void 0===s?void 0:s.querySelector(`svg[${i}]`))&&void 0!==o?o:void 0,this.svg!==l&&(this.svgComputedStyle=this.svg?window.getComputedStyle(this.svg):void 0),this.container=null!==(a=null===(r=this.svg)||void 0===r?void 0:r.querySelector(`span[${n}]`))&&void 0!==a?a:void 0,this.observe()}disconnectedCallback(){this.svg=void 0,this.svgComputedStyle=void 0,this.wrapper=void 0,this.container=void 0,this.observe()}attributeChangedCallback(){this.observe()}flushSvgDisplay(){const{svg:t}=this;t&&(t.style.display="inline",requestAnimationFrame((()=>{t.style.display=""})))}observe(){this.containerObserver.disconnect(),this.wrapperObserver.disconnect(),this.wrapper&&this.wrapperObserver.observe(this.wrapper),this.container&&this.containerObserver.observe(this.container),this.svgComputedStyle&&this.observeSVGStyle(this.svgComputedStyle)}observeSVGStyle(t){const e=()=>{const i=(()=>{const e=t.getPropertyValue("--preserve-aspect-ratio");if(e)return e.trim();return`x${(({textAlign:t,direction:e})=>{if(t.endsWith("left"))return"Min";if(t.endsWith("right"))return"Max";if("start"===t||"end"===t){let i="rtl"===e;return"end"===t&&(i=!i),i?"Max":"Min"}return"Mid"})(t)}YMid meet`})();i!==this.svgPreserveAspectRatio&&(this.svgPreserveAspectRatio=i,this.updateSVGRect()),t===this.svgComputedStyle&&requestAnimationFrame(e)};e()}updateSVGRect(){var t,e,i,n,s,o,r;let a=Math.ceil(null!==(e=null===(t=this.containerSize)||void 0===t?void 0:t.width)&&void 0!==e?e:0);const l=Math.ceil(null!==(n=null===(i=this.containerSize)||void 0===i?void 0:i.height)&&void 0!==n?n:0);void 0!==this.dataset.downscaleOnly&&(a=Math.max(a,null!==(o=null===(s=this.wrapperSize)||void 0===s?void 0:s.width)&&void 0!==o?o:0));const c=null===(r=this.svg)||void 0===r?void 0:r.querySelector(":scope > foreignObject");if(null==c||c.setAttribute("width",`${a}`),null==c||c.setAttribute("height",`${l}`),this.svg&&(this.svg.setAttribute("viewBox",`0 0 ${a} ${l}`),this.svg.setAttribute("preserveAspectRatio",this.svgPreserveAspectRatio),this.svg.style.height=a<=0||l<=0?"0":""),this.container){const t=this.svgPreserveAspectRatio.toLowerCase();this.container.style.marginLeft=t.startsWith("xmid")||t.startsWith("xmax")?"auto":"0",this.container.style.marginRight=t.startsWith("xmi")?"auto":"0"}}}const o=(t,{attrs:e={},style:i})=>class extends t{constructor(...t){super(...t);for(const[t,i]of Object.entries(e))this.hasAttribute(t)||this.setAttribute(t,i);this.attachShadow({mode:"open"})}static get observedAttributes(){return["data-auto-scaling"]}connectedCallback(){this._update()}attributeChangedCallback(){this._update()}_update(){const t=i?`<style>:host { ${i} }</style>`:"";let e="<slot></slot>";const{autoScaling:n}=this.dataset;if(void 0!==n){e=`<marp-auto-scaling exportparts="svg:auto-scaling" ${"downscale-only"===n?"data-downscale-only":""}>${e}</marp-auto-scaling>`}this.shadowRoot.innerHTML=t+e}};let r;const a=Symbol();let l;const c="marpitSVGPolyfill:setZoomFactor,",d=Symbol(),g=Symbol();const h=()=>{const t="Apple Computer, Inc."===navigator.vendor,e=t?[u]:[],i={then:e=>(t?(async()=>{if(void 0===l){const t=document.createElement("canvas");t.width=10,t.height=10;const e=t.getContext("2d"),i=new Image(10,10),n=new Promise((t=>{i.addEventListener("load",(()=>t()))}));i.crossOrigin="anonymous",i.src="data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%2210%22%20viewBox%3D%220%200%201%201%22%3E%3CforeignObject%20width%3D%221%22%20height%3D%221%22%20requiredExtensions%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxhtml%22%3E%3Cdiv%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxhtml%22%20style%3D%22width%3A%201px%3B%20height%3A%201px%3B%20background%3A%20red%3B%20position%3A%20relative%22%3E%3C%2Fdiv%3E%3C%2FforeignObject%3E%3C%2Fsvg%3E",await n,e.drawImage(i,0,0),l=e.getImageData(5,5,1,1).data[3]<128}return l})().then((t=>{null==e||e(t?[u]:[])})):null==e||e([]),i)};return Object.assign(e,i)};let p,m;function u(t){const e="object"==typeof t&&t.target||document,i="object"==typeof t?t.zoom:t;window[g]||(Object.defineProperty(window,g,{configurable:!0,value:!0}),document.body.style.zoom=1.0001,document.body.offsetHeight,document.body.style.zoom=1,window.addEventListener("message",(({data:t,origin:e})=>{if(e===window.origin)try{if(t&&"string"==typeof t&&t.startsWith(c)){const[,e]=t.split(","),i=Number.parseFloat(e);Number.isNaN(i)||(m=i)}}catch(t){console.error(t)}})));let n=!1;Array.from(e.querySelectorAll("svg[data-marpit-svg]"),(t=>{var e,s,o,r;t.style.transform||(t.style.transform="translateZ(0)");const a=i||m||t.currentScale||1;p!==a&&(p=a,n=a);const l=t.getBoundingClientRect(),{length:c}=t.children;for(let i=0;i<c;i+=1){const n=t.children[i];if(n.getScreenCTM){const t=n.getScreenCTM();if(t){const i=null!==(s=null===(e=n.x)||void 0===e?void 0:e.baseVal.value)&&void 0!==s?s:0,c=null!==(r=null===(o=n.y)||void 0===o?void 0:o.baseVal.value)&&void 0!==r?r:0,d=n.children.length;for(let e=0;e<d;e+=1){const s=n.children[e];if("SECTION"===s.tagName){const{style:e}=s;e.transformOrigin||(e.transformOrigin=`${-i}px ${-c}px`),e.transform=`scale(${a}) matrix(${t.a}, ${t.b}, ${t.c}, ${t.d}, ${t.e-l.left}, ${t.f-l.top}) translateZ(0.0001px)`;break}}}}}})),!1!==n&&Array.from(e.querySelectorAll("iframe"),(({contentWindow:t})=>{null==t||t.postMessage(`${c}${n}`,"null"===window.origin?"*":window.origin)}))}function v({once:t=!1,target:e=document}={}){const i=function(t=document){if(t[d])return t[d];let e=!0;const i=()=>{e=!1,delete t[d]};Object.defineProperty(t,d,{configurable:!0,value:i});let n=[],s=!1;(async()=>{try{n=await h()}finally{s=!0}})();const o=()=>{for(const e of n)e({target:t});s&&0===n.length||e&&window.requestAnimationFrame(o)};return o(),i}(e);return t?(i(),()=>{}):i}p=1,m=void 0;const b=Symbol(),w=(e=document)=>{if("undefined"==typeof window)throw new Error("Marp Core's browser script is valid only in browser context.");if(((e=document)=>{const i=window[a];i||customElements.define("marp-auto-scaling",s);for(const n of Object.keys(t)){const s=`marp-${n}`,a=t[n].proto();null!=r||(r=!!document.createElement("div",{is:"marp-auto-scaling"}).outerHTML.startsWith("<div is")),r&&a!==HTMLElement?i||customElements.define(s,o(a,{style:t[n].style}),{extends:n}):(i||customElements.define(s,o(HTMLElement,t[n])),e.querySelectorAll(`${n}[is="${s}"]`).forEach((t=>{t.outerHTML=t.outerHTML.replace(new RegExp(`^<${n}`,"i"),`<${s}`).replace(new RegExp(`</${n}>$`,"i"),`</${s}>`)})))}window[a]=!0})(e),e[b])return e[b];const i=v({target:e}),n=()=>{i(),delete e[b]},l=Object.assign(n,{cleanup:n,update:()=>w(e)});return Object.defineProperty(e,b,{configurable:!0,value:l}),l},y=document.currentScript;w(y?y.getRootNode():document)}();
 </script></foreignObject></svg></div><script>/*!! License: https://unpkg.com/@marp-team/marp-cli@3.4.0/lib/bespoke.js.LICENSE.txt */
