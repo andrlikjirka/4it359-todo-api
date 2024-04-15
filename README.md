@@ -1,18 +1,21 @@
-Exercise for this week extends your last week's exercise.
+## Exercise for this week
 
-- ensure you merged your exercise to `week03` branch
-- create a new branch on top of updated `week03` branch
-- write tests for your implementation
-   - unit tests
-   - integration tests
-   - end to end tests
-- push and create a pull request
-- let others review or find someone to do so
+Implement a middleware to check if body of the request isn't too big.
+For our purposes, request content length shouldn't be bigger than 500 characters.
+If it is, short-circuit the pipeline and return 413 immediately.
 
 ## Bonus
 
 <details>
 
-If you're confident in writing tests, write some tests for `ModelValidationAttribute` class.
+Add response body to inform caller what's wrong.
+
+```json
+{
+  "error": {
+    "message": "The request body is too long. Allowed maximum is 500, but the request had <value>."
+  }
+}
+```
 
 </details>
