@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using NSubstitute;
+using TodoApp.Api.Configuration;
 using TodoApp.Api.Data;
 using TodoApp.Api.Helpers;
 using TodoApp.Api.HostedServices;
@@ -24,7 +26,15 @@ public class TaskCollectorTest
         var scopeFactoryMock = Substitute.For<IServiceScopeFactory>();
         scopeFactoryMock.CreateScope().Returns(scopeMock);
 
-        var sut = new TaskCollector(scopeFactoryMock);
+        // Mock configuration options
+        var taskCollectorOptions = new TaskCollectorOptions
+        {
+            EnableTaskCollector = true
+        };
+        var optionsMock = Substitute.For<IOptions<TaskCollectorOptions>>();
+        optionsMock.Value.Returns(taskCollectorOptions);
+        
+        var sut = new TaskCollector(scopeFactoryMock, optionsMock);
         var cancellationToken = new CancellationToken();
         await sut.StartAsync(cancellationToken);
         Assert.False(sut.ExecuteTask.IsCompleted);

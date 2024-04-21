@@ -1,21 +1,10 @@
 ## Exercise for this week
 
-Implement a middleware to check if body of the request isn't too big.
-For our purposes, request content length shouldn't be bigger than 500 characters.
-If it is, short-circuit the pipeline and return 413 immediately.
-
-## Bonus
-
-<details>
-
-Add response body to inform caller what's wrong.
-
-```json
-{
-  "error": {
-    "message": "The request body is too long. Allowed maximum is 500, but the request had <value>."
-  }
-}
-```
-
-</details>
+Make the background service we implemented couple weeks ago configurable:
+- Create an option to start the background service.
+    - If the option will be false, the background service won't be even added to DI container.
+- Create an option for sweep interval.
+    - Currently, the sweep interval is 5s.
+- Create an option for lowest priority to remove.
+    - Don't remove items with lower priority number.
+    - Validate its range using any configuration validation we mentioned.

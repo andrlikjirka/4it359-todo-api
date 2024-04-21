@@ -1,3 +1,5 @@
+﻿using Microsoft.Extensions.Options;
+using TodoApp.Api.Configuration;
 using TodoApp.Api.Data;
 
 namespace TodoApp.Api.HostedServices;
@@ -9,9 +11,12 @@ public class TaskCollector : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
 
-    public TaskCollector(IServiceScopeFactory scopeFactory)
+    private readonly TaskCollectorOptions _options;
+
+    public TaskCollector(IServiceScopeFactory scopeFactory, IOptions<TaskCollectorOptions> options)
     {
         _scopeFactory = scopeFactory;
+        _options = options.Value;
     }
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
