@@ -13,7 +13,7 @@
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
 <h1 id="web-application-development-on-net-platform">Web application development on .NET platform</h1>
-<h3 id="configuration-routing-health-checks">Configuration, routing, health checks</h3>
+<h3 id="authentication-and-authorization">Authentication and authorization</h3>
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
   mermaid.initialize({ startOnLoad: true });
@@ -22,485 +22,414 @@
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="2" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="configuration">Configuration</h1>
+<h1 id="authentication">Authentication</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>runtime parameters
-<ul>
-<li>deployment specific</li>
-<li>system synchronization</li>
-<li>disaster recovery</li>
-<li>security</li>
-<li>server identification</li>
-</ul>
-</li>
+<li>who user is</li>
+<li>user is a set of properties</li>
+<li>user needs to prove</li>
 </ul>
 </div><div class="columns-right">
-<img src="config-illustration.webp" />
+<img src="authentication.webp" />
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="3" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="configuration-in-aspnet">Configuration in ASP.NET</h1>
+<h1 id="provable-properties">Provable properties</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>
-<p>POCO class</p>
+<li>things user can prove about himself</li>
+<li>something he knows
 <ul>
-<li>declare properties</li>
+<li>password, personal information</li>
 </ul>
 </li>
-<li>
-<p>sources</p>
+<li>something he has
 <ul>
-<li>provide raw values</li>
-<li>file, remote server, environment variables</li>
+<li>tokens, chip cards, certificates</li>
 </ul>
 </li>
-<li>
-<p>consumers</p>
+<li>something he is
 <ul>
-<li>IOptions</li>
-<li>IOptionsSnapshot</li>
-<li>IOptionsMonitor</li>
+<li>biometrics like fingerprints</li>
+</ul>
+</li>
+<li>where he is
+<ul>
+<li>IP address, ISP</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TelemetryOptions</span>
-{
-    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Region { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
-    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Location { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
-    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> ServerUrl { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
-    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> ApiKey { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
-}
-
-<span class="hljs-comment">// program.cs</span>
-builder.Services.Configure&lt;TelemetryOptions&gt;(
-  builder.Configuration.GetSection(<span class="hljs-string">&quot;Telemetry&quot;</span>));
-</code></pre>
+<img src="auth-props.webp" />
+<ul>
+<li>a reference
+<ul>
+<li>identity providers</li>
+</ul>
+</li>
+</ul>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="4" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="configuration-sources">Configuration sources</h1>
+<h1 id="authentication-protocols">Authentication protocols</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>provides raw configuration values</li>
-<li>latter overrides former</li>
-<li>customization
-<ul>
-<li>IConfigurationSource</li>
-<li>IConfigurationProvider</li>
-</ul>
-</li>
+<li>Basic</li>
+<li>Digest</li>
+<li>HMAC</li>
+<li>Token</li>
+<li>OAuth</li>
+<li>OpenID Connect</li>
+<li>SAML</li>
+<li>SAS Token</li>
+<li>PoP token</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">
-<span class="hljs-keyword">var</span> builder = WebApplication.CreateBuilder(args);
-
-<span class="hljs-comment">// JSON file provider</span>
-builder.Configuration.AddJsonFile(
-  <span class="hljs-string">$&quot;appsettings.<span class="hljs-subst">{builder.Environment.EnvironmentName}</span>.json&quot;</span>, <span class="hljs-literal">true</span>);
-
-<span class="hljs-comment">// environmental variables provider</span>
-<span class="hljs-comment">// TelemetryOptions__Region = &quot;West Europe&quot;</span>
-<span class="hljs-comment">// =&gt; {&quot;TelemetryOptions&quot;: {&quot;Region&quot;: &quot;West Europe&quot;}}</span>
-builder.Configuration.AddEnvironmentVariables()
-
-<span class="hljs-comment">// --Logging:LogLevel=Warning</span>
-builder.Configuration.AddCommandLine(args)
-
-<span class="hljs-comment">// dotnet user-secrets set &quot;Movies:ServiceApiKey&quot; &quot;12345&quot;</span>
-builder.Configuration.AddUserSecrets&lt;Program&gt;()
-
-
-builder.Configuration.AddAzureKeyVault(
-    <span class="hljs-keyword">new</span> Uri(<span class="hljs-string">$&quot;https://<span class="hljs-subst">{builder.Configuration[<span class="hljs-string">&quot;KeyVaultName&quot;</span>]}</span>.vault.azure.net/&quot;</span>),
-    <span class="hljs-keyword">new</span> DefaultAzureCredential(),
-    <span class="hljs-keyword">new</span> AzureKeyVaultConfigurationOptions
-    {
-        Manager = <span class="hljs-comment">/*your manager needs to know what secrets to use*/</span>
-    });
-
-</code></pre>
+<img src="auth-methods.webp" />
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="5" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="configuration-sources-1">Configuration sources</h1>
+<h1 id="basic-authentication">Basic authentication</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>provides raw configuration values</li>
-<li>latter overrides former</li>
-<li>customization
-<ul>
-<li>IConfigurationSource</li>
-<li>IConfigurationProvider</li>
-</ul>
-</li>
+<li>uses Authorization header</li>
+<li>format: <code>Basic &lt;payload&gt;</code></li>
+<li>payload <code>name:password</code> in base64</li>
+<li>needs HTTPS</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-json"><span class="hljs-punctuation">{</span>
-  <span class="hljs-attr">&quot;Region&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;North Europe&quot;</span><span class="hljs-punctuation">,</span>
-  <span class="hljs-attr">&quot;Location&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Netherlands&quot;</span><span class="hljs-punctuation">,</span>
-  <span class="hljs-attr">&quot;ServerUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://localhost:57589/metrics&quot;</span><span class="hljs-punctuation">,</span>
-  <span class="hljs-attr">&quot;DefaultUser&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">42</span>
-<span class="hljs-punctuation">}</span>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">GET /resource HTTP/1.1
+Host: example.com
+Authorization: Basic QWxpY2U6U2VjcmV0UGFzc3dvcmQxMjM=
 </code></pre>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-json"><span class="hljs-punctuation">{</span>
-  <span class="hljs-attr">&quot;ServerUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://dl.contoso.com/metrics&quot;</span><span class="hljs-punctuation">,</span>
-  <span class="hljs-attr">&quot;ApiKey&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fhiogherwjgtziuegt&quot;</span><span class="hljs-punctuation">,</span>
-  <span class="hljs-string">&quot;DefaultUser : null
-}
-</span></code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="6" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="configuration-setup">Configuration setup</h1>
+<h1 id="digest-authentication">Digest authentication</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>part of services registration</li>
-<li>renew on configuration source change</li>
-<li>direct binding</li>
+<li>tries to overcome basic auth issues</li>
+<li>challenge flow auth
+<ul>
+<li>no plain-text password</li>
+</ul>
+</li>
+<li>needs additional calls</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">
-<span class="hljs-comment">// just adds an instance</span>
-services.Configure&lt;TelemetryOptions&gt;();
-
-<span class="hljs-comment">// programatic configuration</span>
-services.Configure&lt;TelemetryOptions&gt;(options =&gt; options.Region = <span class="hljs-string">&quot;West Europe&quot;</span>);
-
-<span class="hljs-comment">// adds instance and maps to configuration</span>
-services.Configure&lt;TelemetryOptions&gt;(
-  builder.Configuration.GetSection(<span class="hljs-string">&quot;Telemetry&quot;</span>));
-
-<span class="hljs-comment">// adds instance and maps to top level configuration</span>
-services.Configure&lt;TelemetryOptions&gt;(builder.Configuration);
-
-<span class="hljs-comment">// direct binding</span>
-<span class="hljs-keyword">var</span> telemetryOptions = <span class="hljs-keyword">new</span> TelemetryOptions();
-builder.Configuration.Bind(telemetryOptions);      <span class="hljs-comment">//  &lt;--- This</span>
-builder.Services.AddSingleton(telemetryOptions);
-
-<span class="hljs-comment">// a bit low level approach</span>
-<span class="hljs-comment">// you get a builder back with several advanced options</span>
-services.AddOptions&lt;TelemetryOptions&gt;()
-  .Configure&lt;LoggingOptions&gt;((tOptions, lOptions =&gt; 
-    tOptions.Location = lOptions.Location);
-  .Bind(Configuration.GetSection(<span class="hljs-string">&quot;Telemetry&quot;</span>))
-
-<span class="hljs-comment">// named options</span>
-services.Configure&lt;TelemetryOptions&gt;(
-  <span class="hljs-string">&quot;prime&quot;</span>, options =&gt; options.Server = <span class="hljs-keyword">new</span> Uri(<span class="hljs-string">&quot;https://prime.com/otel&quot;</span>));
-services.Configure&lt;TelemetryOptions&gt;(
-  <span class="hljs-string">&quot;backup&quot;</span>, options =&gt; options.Server = <span class="hljs-keyword">new</span> Uri(<span class="hljs-string">&quot;https://backup.com/otel&quot;</span>));
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">HTTP/1.1 401 Unauthorized
+WWW-Authenticate: Digest realm=<span class="hljs-string">&quot;example.com&quot;</span>,
+  qop=<span class="hljs-string">&quot;auth&quot;</span>,nonce=<span class="hljs-string">&quot;dcd98b7102dd2f0e8b11d0f600bfb0c093&quot;</span>,
+  opaque=<span class="hljs-string">&quot;5ccc069c403ebaf9f0171e9517f40e41&quot;</span>
+</code></pre>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">GET /resource HTTP/1.1
+Host: example.com
+Authorization: Digest username=<span class="hljs-string">&quot;Alice&quot;</span>,
+  realm=<span class="hljs-string">&quot;example.com&quot;</span>,nonce=<span class="hljs-string">&quot;dcd98b7102dd2f0e8b11d0f600bfb0c093&quot;</span>,
+  uri=<span class="hljs-string">&quot;/resource&quot;</span>,response=<span class="hljs-string">&quot;6629fae49393a05397450978507c4ef1&quot;</span>,
+  opaque=<span class="hljs-string">&quot;5ccc069c403ebaf9f0171e9517f40e41&quot;</span>,qop=auth,nc=00000001,
+  cnonce=<span class="hljs-string">&quot;0a4f113b&quot;</span>
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="7" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="ioptions">IOptions</h1>
+<h1 id="hmac-authentication">HMAC authentication</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>configuration POCO wrapper</li>
-<li>can be constructor injected</li>
-<li>doesn't reflect configuration changes</li>
+<li>Hash-Based Message Authentication Code</li>
+<li>signature covers request parts
+<ul>
+<li>body</li>
+<li>date</li>
+<li>path</li>
+</ul>
+</li>
+<li>prevents sending plain-text password</li>
+<li>doesn't need additional calls
+<ul>
+<li>needs additional CPU cycles</li>
+</ul>
+</li>
+<li>prevents replay attacks, body tampering...</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IOptions</span>&lt;<span class="hljs-keyword">out</span> <span class="hljs-title">TOptions</span>&gt; <span class="hljs-keyword">where</span> <span class="hljs-title">TOptions</span> : <span class="hljs-keyword">class</span>
-{
-    TOptions Value { <span class="hljs-keyword">get</span>; }
-}
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">POST /api/update HTTP/1.1
+Host: example.com
+Content-Type: application/json
+Date: Tue, 10 Nov 2020 08:00:00 GMT
+Authorization: HMAC Date,
+  Content-Length,3yxb9caBdq+uv3hL4Bg3xgTTXQzP6+8Q0Y1kbbY1uQ8=
+Content-Length: 31
 
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TelemetryService</span>
-{
-    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> TelemetryOptions _options;
-
-    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Region =&gt; _options.Region;
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">SomeService</span>(<span class="hljs-params">IOptions&lt;TelemetryOptions&gt; options</span>)</span>
-    {
-        _options = options.Value;
-    }
-}
-
+{<span class="hljs-string">&quot;name&quot;</span>:<span class="hljs-string">&quot;John Doe&quot;</span>,<span class="hljs-string">&quot;age&quot;</span>:30}
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="8" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
+<h1 id="bearer-authentication">Bearer authentication</h1>
 <div class="columns"><div class="columns-left">
-<h1 id="ioptionssnapshot">IOptionsSnapshot</h1>
 <ul>
-<li>configuration POCO wrapper</li>
-<li>can be constructor injected
-<ul>
-<li>injects fresh values</li>
-<li>not for singletons</li>
-</ul>
-</li>
-<li>offers named options</li>
+<li>a family of token-based flows</li>
+<li>typically uses JWT token</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IOptionsSnapshot</span>&lt;<span class="hljs-keyword">out</span> <span class="hljs-title">TOptions</span>&gt; : <span class="hljs-title">IOptions</span>&lt;<span class="hljs-title">TOptions</span>&gt;
-    <span class="hljs-keyword">where</span> <span class="hljs-title">TOptions</span> : <span class="hljs-keyword">class</span>
-{
-    <span class="hljs-function">TOptions <span class="hljs-title">Get</span>(<span class="hljs-params"><span class="hljs-built_in">string</span>? name</span>)</span>;
-}
-
-<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">Invoke</span>(<span class="hljs-params">HttpContext context</span>)</span>
-{
-    <span class="hljs-keyword">var</span> options = context.RequestServices
-      .GetRequiredservice&lt;IOptionsSnapshot&lt;TelemetryOptions&gt;&gt;();
-    <span class="hljs-keyword">var</span> region = options.Get(<span class="hljs-string">&quot;prime&quot;</span>).Region;
-    <span class="hljs-keyword">var</span> location = options.Value.Location;
-}
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">GET /resource HTTP/1.1
+Host: example.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+  eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.
+  SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="9" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
+<h1 id="jwt-token">JWT token</h1>
 <div class="columns"><div class="columns-left">
-<h1 id="ioptionsmonitor">IOptionsMonitor</h1>
 <ul>
-<li>configuration POCO wrapper</li>
-<li>can be constructor injected</li>
-<li>reflects configuration changes</li>
-<li>offers named options</li>
-<li>offers onChange callback</li>
+<li>tampering resistant token format</li>
+<li>header &amp; payload
+<ul>
+<li>JSON</li>
+<li>base64 encoded</li>
+</ul>
+</li>
+<li>signature
+<ul>
+<li>header and payload</li>
+<li>using cypher or certificate</li>
+</ul>
+</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IOptionsMonitor</span>&lt;<span class="hljs-keyword">out</span> <span class="hljs-title">TOptions</span>&gt;
-{
-    TOptions CurrentValue { <span class="hljs-keyword">get</span>; }
-
-    <span class="hljs-function">TOptions <span class="hljs-title">Get</span>(<span class="hljs-params"><span class="hljs-built_in">string</span>? name</span>)</span>;
-
-    IDisposable? OnChange(Action&lt;TOptions, <span class="hljs-built_in">string</span>?&gt; listener);
-}
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TelemetryService</span>
-{
-    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IOptionsMonitor&lt;TelemetryOptions&gt; _options;
-    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> Region =&gt; _options.CurrentValue.Region;
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> <span class="hljs-title">GetLocation</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> tier</span>)</span> =&gt; _options.Get(tier).Location;
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">SomeService</span>(<span class="hljs-params">IOptionsMonitor&lt;TelemetryOptions&gt; options</span>)</span>
-    {
-        _options = options;
-        options.OnChange += (newValue, name) =&gt; RestartLogger(newValue);
-    }
-}
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+  .eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ
+  .SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+</code></pre>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;alg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;HS256&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;typ&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;JWT&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;sub&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1234567890&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;admin&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;iat&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1516239022</span>
+<span class="hljs-punctuation">}</span>
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="10" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="postconfigure">PostConfigure</h1>
+<h1 id="oauth-authentication">OAuth authentication</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>after all Configure methods called</li>
-<li>the last word
+<li>delegated authentication</li>
+<li>multiple flows</li>
+<li>focuses more on authorization</li>
+<li>uses access tokens
 <ul>
-<li>final overrides</li>
-<li>forcing defaults</li>
+<li>usually JWT token</li>
 </ul>
 </li>
-<li>syncronization with other services</li>
-<li>conditional configuration</li>
+<li>Microsoft, Google, Facebook...</li>
+<li>OpenID Connect
+<ul>
+<li>extends OAuth with ID tokens</li>
+</ul>
+</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">builder.Services.PostConfigure&lt;MessagingOptions&gt;(options =&gt;
-{
-    options.RetryCount = Math.Max(<span class="hljs-number">5</span>, options.RetryCount);
-});
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">POST /token HTTP/1.1
+Host: authorization-server.com
+Content-Type: application/x-www-form-urlencoded
 
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TelemetryOptionsPostConfigure</span> : <span class="hljs-title">IPostConfigureOptions</span>&lt;<span class="hljs-title">TelemetryOptions</span>&gt;
-{
-    <span class="hljs-keyword">private</span> IOptionsMonitor&lt;LoggingOptions&gt; _loggingOptions;
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">MyServiceSettingsPostConfigure</span>(<span class="hljs-params">IOptionsMonitor&lt;LoggingOptions&gt; options</span>)</span>
-    {
-        _telemetryOptions = options;
-    }
-    
-    
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">PostConfigure</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> name, TelemetryOptions options</span>)</span>
-    {
-        options.Location = _loggingOptions.Location;
-    }
-}
-
-services.Configure&lt;TelemetryOptions&gt;(
-    Configuration.GetSection(<span class="hljs-string">&quot;Telemetry&quot;</span>));
-  services
-  .AddSingleton&lt;IPostConfigureOptions&lt;TelemetryOptions&gt;,
-  TelemetryOptionsPostConfigure&gt;();
+grant_type=authorization_code&amp;
+  code=AUTH_CODE_RECEIVED_FROM_AUTHORIZATION&amp;
+  redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb&amp;
+  client_id=CLIENT_ID&amp;
+  client_secret=CLIENT_SECRET
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="11" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<div class="columns"><div class="columns-left">
-<h1 id="optionsvalidation">OptionsValidation</h1>
+<div class="columns"><div class="columns-left" style="margin-top:10%">
+<h1 id="identity">Identity</h1>
 <ul>
-<li>validates configuration
+<li>HttpContext.User
 <ul>
-<li>on startup</li>
-<li>on first usage</li>
+<li>ClaimsPrincipal</li>
 </ul>
 </li>
-<li>data annotations</li>
-<li>custom logic</li>
-<li>may cause issues on reconfiguration</li>
+<li>identity
+<ul>
+<li>what user is</li>
+<li>visitor, admin, owner</li>
 </ul>
-</div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">MyServiceOptions</span>
-{
-    [<span class="hljs-meta">Required</span>]
-    [<span class="hljs-meta">Url</span>]
-    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> ServiceEndpoint { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
-
-    [<span class="hljs-meta">Range(1, 60)</span>]
-    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> TimeoutInSeconds { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-number">30</span>;
-}
-
-<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">ConfigureServices</span>(<span class="hljs-params">IServiceCollection services</span>)</span>
-{
-    services.AddOptions&lt;MyServiceOptions&gt;()
-            .Bind(Configuration.GetSection(<span class="hljs-string">&quot;MyServiceOptions&quot;</span>))
-            .ValidateDataAnnotations();
-}
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">MyServiceOptionsValidation</span> : <span class="hljs-title">IValidateOptions</span>&lt;<span class="hljs-title">MyServiceOptions</span>&gt;
-{
-    <span class="hljs-function"><span class="hljs-keyword">public</span> ValidateOptionsResult <span class="hljs-title">Validate</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> name, MyServiceOptions options</span>)</span>
-    {
-        <span class="hljs-keyword">var</span> failures = <span class="hljs-keyword">new</span> List&lt;<span class="hljs-built_in">string</span>&gt;();
-
-        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">string</span>.IsNullOrEmpty(options.ServiceEndpoint))
-        {
-            failures.Add(<span class="hljs-string">$&quot;<span class="hljs-subst">{<span class="hljs-keyword">nameof</span>(options.ServiceEndpoint)}</span> is required.&quot;</span>);
+</li>
+<li>claim
+<ul>
+<li>a truth about its identity</li>
+</ul>
+</li>
+</ul>
+</div><div class="columns-right mermaid">
+    classDiagram
+        IPrincipal --|&gt; IIdentity : has
+        ClaimsIdentity --|&gt; Claim : has
+        ClaimsIdentity --|&gt; IIdentity: implements
+        ClaimsPrincipal --|&gt; ClaimsIdentity : has
+        ClaimsPrincipal --|&gt; IPrincipal : implements
+        HtpContext --|&gt; ClaimsPrincipal: has
+        class IIdentity {
+            +Name: string?
+            +AuthenticationType: string?
+            IsAuthenticated: bool
         }
-
-        <span class="hljs-keyword">if</span> (failures.Count &gt; <span class="hljs-number">0</span>)
-        {
-            <span class="hljs-keyword">return</span> ValidateOptionsResult.Fail(failures);
+        class IPrincipal {
+            +Identity: IIdentity?
+            +IsInRole(role: string) bool
         }
-
-        <span class="hljs-keyword">return</span> ValidateOptionsResult.Success;
-    }
-}
-
-<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">ConfigureServices</span>(<span class="hljs-params">IServiceCollection services</span>)</span>
-{
-    services.AddOptions&lt;MyServiceOptions&gt;()
-            .Bind(Configuration.GetSection(<span class="hljs-string">&quot;MyServiceOptions&quot;</span>))
-            .Validate&lt;MyServiceOptionsValidation&gt;();
-}
-
-services.AddOptions&lt;MyServiceOptions&gt;()
-        .Bind(Configuration.GetSection(<span class="hljs-string">&quot;MyServiceOptions&quot;</span>))
-        .ValidateDataAnnotations()
-        .ValidateOnStart();
-
-</code></pre>
+        class ClaimsPrincipal{
+            +Identity: IIdentity
+            +Identities: IEnumerable&ltClaimsIdentity&gt;
+            +IsInRole(role: string) bool
+        }
+        class ClaimsIdentity {
+            +Name: string?
+            +AuthenticationType: string?
+            IsAuthenticated: bool
+        }
+        class Claim {
+            +Value: string
+            +Type: string
+            +Issuer: string
+            +ValueType: string
+        }
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="12" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
+<h1 id="claim">Claim</h1>
 <div class="columns"><div class="columns-left">
-<h1 id="using-iconfiguration-directly">using IConfiguration directly</h1>
 <ul>
-<li>avoid if possible
+<li>a true statement</li>
+<li>key-name pair
 <ul>
-<li>use strongly typed IOptions</li>
+<li>claim type</li>
+<li>claim value</li>
 </ul>
 </li>
-<li>when to use
+<li>formalized names
 <ul>
-<li>at startup</li>
-<li>runtime based keys</li>
-<li>locality (take next key, previous etc.)</li>
-<li>need to bind manually</li>
-<li>need to register callbacks</li>
+<li>namespace + name</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IConfiguration</span>
-{
-    <span class="hljs-built_in">string</span>? <span class="hljs-keyword">this</span>[<span class="hljs-built_in">string</span> key] { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">internal</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> ClaimTypeNamespace =
+  <span class="hljs-string">&quot;http://schemas.microsoft.com/ws/2008/06/identity/claims&quot;</span>;
+ 
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> AuthenticationInstant =
+  ClaimTypeNamespace + <span class="hljs-string">&quot;/authenticationinstant&quot;</span>;
 
-    <span class="hljs-function">IConfigurationSection <span class="hljs-title">GetSection</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> key</span>)</span>;
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> AuthenticationMethod =
+  ClaimTypeNamespace + <span class="hljs-string">&quot;/authenticationmethod&quot;</span>;
 
-    <span class="hljs-function">IEnumerable&lt;IConfigurationSection&gt; <span class="hljs-title">GetChildren</span>()</span>;
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> CookiePath =
+  ClaimTypeNamespace + <span class="hljs-string">&quot;/cookiepath&quot;</span>;
 
-    <span class="hljs-function">IChangeToken <span class="hljs-title">GetReloadToken</span>()</span>;
-}
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> Dsa =
+  ClaimTypeNamespace + <span class="hljs-string">&quot;/dsa&quot;</span>;
 
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">MyService</span>
-{
-    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IConfiguration _configuration;
-    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IOptionsMonitor&lt;SecurityOptions&gt; _securityOptions;
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> Expiration =
+  ClaimTypeNamespace + <span class="hljs-string">&quot;/expiration&quot;</span>;
 
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">MyService</span>(<span class="hljs-params">IConfiguration configuration,
-      IOptionsMonitor&lt;SecurityOptions&gt; options</span>)</span>
-    {
-        _configuration = configuration;
-        _options = options;
-    }
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> Expired =
+  ClaimTypeNamespace + <span class="hljs-string">&quot;/expired&quot;</span>;
 
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">PrintSettings</span>()</span>
-    {
-        <span class="hljs-keyword">var</span> appKey = _configuration.GetSection(<span class="hljs-string">&quot;Security:Keys&quot;</span>)
-          .GetValue&lt;<span class="hljs-built_in">string</span>&gt;(_securityOptions.CurrentValue.KeyName);
-        <span class="hljs-comment">/*...*/</span>
-    }
-}
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> GroupSid =
+  ClaimTypeNamespace + <span class="hljs-string">&quot;/groupsid&quot;</span>;
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> IsPersistent =
+  ClaimTypeNamespace + <span class="hljs-string">&quot;/ispersistent&quot;</span>;
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> Role =
+  ClaimTypeNamespace + <span class="hljs-string">&quot;/role&quot;</span>;
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> SerialNumber =
+  ClaimTypeNamespace + <span class="hljs-string">&quot;/serialnumber&quot;</span>;
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> UserData =
+  ClaimTypeNamespace + <span class="hljs-string">&quot;/userdata&quot;</span>;
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> Version =
+  ClaimTypeNamespace + <span class="hljs-string">&quot;/version&quot;</span>;
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="13" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="routing">Routing</h1>
 <div class="columns"><div class="columns-left">
+<h1 id="addauthentication">AddAuthentication</h1>
 <ul>
-<li>maps requests to endpoints</li>
-<li>template driven</li>
-<li>convention based routing</li>
-<li>attribute based routing</li>
+<li>registers relevant types in DI</li>
+<li>configures authentication schemes</li>
+<li>we add JWT bearer auth
+<ul>
+<li>built-in</li>
+<li>extremely customizable</li>
+</ul>
+</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">app.UseEndpoints(endpoints =&gt;
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">builder.Services.AddAuthentication(options =&gt;
+    {
+        options.DefaultAuthenticateScheme =
+            JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme =
+            JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =&gt;
+    {
+        options.RequireHttpsMetadata = <span class="hljs-literal">false</span>;
+        options.SaveToken = <span class="hljs-literal">true</span>;
+        options.TokenValidationParameters = <span class="hljs-keyword">new</span>()
+        {
+            ValidateIssuerSigningKey = <span class="hljs-literal">true</span>,
+            IssuerSigningKey = <span class="hljs-keyword">new</span> SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration.GetValue&lt;<span class="hljs-built_in">string</span>&gt;(<span class="hljs-string">&quot;Security:TokenSecret&quot;</span>))),
+            IssuerSigningKeyResolver = (_, _, _, parameters) =&gt; <span class="hljs-keyword">new</span>[] { parameters.IssuerSigningKey },
+            ValidateIssuer = <span class="hljs-literal">false</span>,
+            ValidateAudience = <span class="hljs-literal">false</span>,
+        };
+    });
+</code></pre>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">[<span class="hljs-meta">Authorize</span>]
+[<span class="hljs-meta">HttpPost</span>]
+[<span class="hljs-meta">ModelValidation</span>]
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;ActionResult&lt;Item&gt;&gt; Post(CreateItemRequest request)
 {
-    endpoints.MapControllerRoute(
-        name: <span class="hljs-string">&quot;default&quot;</span>,
-        pattern: <span class="hljs-string">&quot;{controller=Home}/{action=Index}/{id?}&quot;</span>);
-});
-
-
-[<span class="hljs-meta">Route(<span class="hljs-string">&quot;api/[controller]&quot;</span>)</span>]
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ProductsController</span> : <span class="hljs-title">ControllerBase</span>
-{
-    [<span class="hljs-meta">HttpGet(<span class="hljs-string">&quot;{id}&quot;</span>)</span>]
-    <span class="hljs-function"><span class="hljs-keyword">public</span> IActionResult <span class="hljs-title">GetProduct</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> id</span>)</span> { <span class="hljs-comment">/* ... */</span> }
+    <span class="hljs-keyword">var</span> item = <span class="hljs-keyword">await</span> _itemRepository.Add(request.ToItem());
+    <span class="hljs-keyword">return</span> CreatedAtAction(<span class="hljs-keyword">nameof</span>(Get), <span class="hljs-keyword">new</span> { id = item.Id }, item);
 }
 </code></pre>
 </div></div>
@@ -509,42 +438,58 @@ services.AddOptions&lt;MyServiceOptions&gt;()
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
 <div class="columns"><div class="columns-left">
-<h1 id="route-parameters">route parameters</h1>
+<h1 id="implementing-basic-auth">Implementing basic auth</h1>
 <ul>
-<li>defined by {}
-<ul>
-<li>{controller}/{action}/{id}</li>
-</ul>
-</li>
-<li>may be optional
-<ul>
-<li>{controller}/{action}/{id?}</li>
-</ul>
-</li>
-<li>default values
-<ul>
-<li>{controller=Home}/{action=Index}/{id?}</li>
-</ul>
-</li>
+<li>just for example</li>
+<li>not recommended</li>
+<li>basic auth handler is missing intentionally</li>
 </ul>
 </div><div class="columns-right">
-<ul>
-<li>catch-all parameters
-<ul>
-<li>&quot;Blog/{*slug}&quot;</li>
-</ul>
-</li>
-<li>type constraints
-<ul>
-<li>&quot;{controller=Home}/{action=Index}/{id:int?}&quot;</li>
-</ul>
-</li>
-</ul>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">BlogController</span> : <span class="hljs-title">Controller</span>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">BasicHandler</span> : <span class="hljs-title">AuthenticationHandler</span>&lt;<span class="hljs-title">AuthenticationSchemeOptions</span>&gt;
 {
-    <span class="hljs-function"><span class="hljs-keyword">public</span> IActionResult <span class="hljs-title">Post</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> id</span>)</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IBasicValidator _userRepository;
+    
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">BasicHandler</span>(<span class="hljs-params">
+            IOptionsMonitor&lt;AuthenticationSchemeOptions&gt; options,
+            ILoggerFactory logger,
+            UrlEncoder encoder,
+            ISystemClock clock,
+            IBasicValidator userRepository</span>)
+        : <span class="hljs-title">base</span>(<span class="hljs-params">options, logger, encoder, clock</span>)</span>
+    { 
+        _userRepository = userRepository;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">async</span> Task&lt;AuthenticateResult&gt; <span class="hljs-title">HandleAuthenticateAsync</span>()</span>
     {
-        <span class="hljs-keyword">return</span> View(id);
+        <span class="hljs-keyword">var</span> header = Request.Headers[<span class="hljs-string">&quot;Authorization&quot;</span>];
+        <span class="hljs-keyword">if</span> (header.Count == <span class="hljs-number">0</span> || !((<span class="hljs-built_in">string</span>)header).StartsWith(
+                <span class="hljs-string">&quot;Basic &quot;</span>, StringComparison.OrdinalIgnoreCase))
+        {
+            <span class="hljs-keyword">return</span> AuthenticateResult.NoResult();
+        }
+        <span class="hljs-keyword">var</span> headerValue = header.ToString()[<span class="hljs-number">7.</span>.].Trim();
+        <span class="hljs-keyword">var</span> credentialBytes = Convert.FromBase64String(headerValue);
+        <span class="hljs-keyword">var</span> credentials = Encoding.UTF8.GetString(credentialBytes).Split(<span class="hljs-string">&#x27;:&#x27;</span>);
+        <span class="hljs-keyword">if</span> (credentials.Length != <span class="hljs-number">2</span>)
+        {
+            <span class="hljs-keyword">return</span> AuthenticateResult.Fail(<span class="hljs-string">&quot;Invalid Authorization header format.&quot;</span>);
+        }
+
+        <span class="hljs-keyword">if</span> (!_userRepository.Validate(credentials[<span class="hljs-number">0</span>], credentials[<span class="hljs-number">1</span>]))
+        {
+            <span class="hljs-keyword">return</span> AuthenticateResult.Fail(<span class="hljs-string">&quot;Invalid username or password.&quot;</span>);
+        }
+
+        <span class="hljs-keyword">var</span> claims = <span class="hljs-keyword">new</span>[] {
+            <span class="hljs-keyword">new</span> Claim(ClaimTypes.NameIdentifier, credentials[<span class="hljs-number">0</span>]),
+            <span class="hljs-keyword">new</span> Claim(ClaimTypes.Name, credentials[<span class="hljs-number">1</span>]),
+        };
+
+        <span class="hljs-keyword">var</span> principal = <span class="hljs-keyword">new</span> ClaimsPrincipal(
+            <span class="hljs-keyword">new</span> ClaimsIdentity(claims, Scheme.Name));
+        <span class="hljs-keyword">return</span> AuthenticateResult.Success(
+            <span class="hljs-keyword">new</span> AuthenticationTicket(principal, Scheme.Name));
     }
 }
 </code></pre>
@@ -553,118 +498,300 @@ services.AddOptions&lt;MyServiceOptions&gt;()
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="15" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="health-checks">Health checks</h1>
 <div class="columns"><div class="columns-left">
+<h1 id="chain-of-responsibility">Chain of responsibility</h1>
 <ul>
-<li>reports app state</li>
-<li>used by LBs, orchestrators</li>
-<li></li>
+<li>decouples sender from receivers
+<ul>
+<li>extensibility</li>
+<li>testability</li>
+<li>isolation</li>
 </ul>
-</div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">services.AddHealthChecks();
-
-services.AddHealthChecks()
-    .AddSqlServer(connectionString: <span class="hljs-string">&quot;YourConnectionString&quot;</span>);
-
-app.UseEndpoints(endpoints =&gt;
-{
-    endpoints.MapHealthChecks(<span class="hljs-string">&quot;/health&quot;</span>);
-});
-
+</li>
+</ul>
+</div><div class="columns-right mermaid">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-mermaid">flowchart TD
+    subgraph ASPNET [&quot;ASP.NET Authorization&quot;]
+        A[(&quot;Requirements&quot;)]
+        B[(&quot;Handler 1&quot;)]
+        C[(&quot;Handler 2&quot;)]
+        D[(&quot;AuthorizationResult&quot;)]
+        A --&gt;|foreach| B
+        B --&gt;|Not sure| C
+        C --&gt;|success/failure| D
+    end
+    subgraph  
+        client[(&quot;Client&quot;)]
+        h1[(&quot;Handler 1&quot;)]
+        h2[(&quot;Handler 2&quot;)]
+        h3[(&quot;Handler 3&quot;)]
+        h4[(&quot;Handler 4&quot;)]
+        client --&gt;|Sends Request| h1
+        h1 --&gt;|Can't handle, pass on| h2
+        h2 --&gt;|Can't handle, pass on| h3
+        h3 --&gt;|Can handle, pass on| h4
+        h4 --&gt;|Can handle | client
+    end
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="16" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="custom-health-check">Custom health check</h1>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ExampleHealthCheck</span> : <span class="hljs-title">IHealthCheck</span>
-{
-    <span class="hljs-function"><span class="hljs-keyword">public</span> Task&lt;HealthCheckResult&gt; <span class="hljs-title">CheckHealthAsync</span>(<span class="hljs-params">HealthCheckContext context,
-      CancellationToken cancellationToken = <span class="hljs-keyword">new</span> CancellationToken(</span>))</span>
-    {
-        <span class="hljs-keyword">var</span> healthCheckResultHealthy = <span class="hljs-literal">true</span>;
+<h1 id="setup-authorization">Setup authorization</h1>
+<div class="columns"><div class="columns-left">
+<ul>
+<li>
+<p>AddAuthorization</p>
+<ul>
+<li>registers services</li>
+<li>configuration</li>
+</ul>
+</li>
+<li>
+<p>UseAuthorization</p>
+<ul>
+<li>Checks UseAuthorization</li>
+<li>Adds a middleware</li>
+</ul>
+</li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">var</span> builder = WebApplication.CreateBuilder(args);
 
-        <span class="hljs-keyword">if</span> (healthCheckResultHealthy)
-        {
-            <span class="hljs-keyword">return</span> Task.FromResult(HealthCheckResult.Healthy(<span class="hljs-string">&quot;A healthy result.&quot;</span>));
-        }
+<span class="hljs-comment">/*...*/</span>
 
-        <span class="hljs-keyword">return</span> Task.FromResult(HealthCheckResult.Unhealthy(<span class="hljs-string">&quot;An unhealthy result.&quot;</span>));
-    }
-}
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+
+<span class="hljs-comment">/*...*/</span>
+
+<span class="hljs-keyword">var</span> app = builder.Build();
+
+<span class="hljs-comment">/*...*/</span>
+
+app.UseAuthentication();
+app.UseAuthorization();
 </code></pre>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">services.AddHealthChecks()
-    .AddCheck&lt;ExampleHealthCheck&gt;(<span class="hljs-string">&quot;example_health_check&quot;</span>);
-
-services.AddHealthChecks()
-    .AddCheck&lt;ExampleHealthCheck&gt;(<span class="hljs-string">&quot;example&quot;</span>, tags: <span class="hljs-keyword">new</span>[] { <span class="hljs-string">&quot;ready&quot;</span> });
-
-app.UseEndpoints(endpoints =&gt;
-{
-    endpoints.MapHealthChecks(<span class="hljs-string">&quot;/health&quot;</span>, <span class="hljs-keyword">new</span> HealthCheckOptions
-    {
-        ResponseWriter = <span class="hljs-keyword">async</span> (context, report) =&gt;
-        {
-            context.Response.ContentType = <span class="hljs-string">&quot;application/json&quot;</span>;
-            <span class="hljs-keyword">var</span> response = <span class="hljs-keyword">new</span>
-            { 
-              status = report.Status.ToString(),
-              checks = report.Entries
-                .Select(x =&gt; <span class="hljs-keyword">new</span> { name = x.Key, status = x.Value.Status, exception = x.Value.Exception?.Message ?? <span class="hljs-string">&quot;none&quot;</span>, duration = x.Value.Duration })
-            };
-            <span class="hljs-keyword">await</span> context.Response.WriteAsync(JsonConvert.SerializeObject(response));
-        }
-    });
-});
-</code></pre>
+</div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="17" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="exercise">Exercise</h1>
+<h1 id="authorizeattribute">AuthorizeAttribute</h1>
+<div class="columns"><div class="columns-left">
 <ul>
-<li>make the background service configurable:
+<li>Default
 <ul>
-<li>option to start it or not at all</li>
-<li>option for sweep interval</li>
-<li>option for lowest priority to remove
+<li>checks if authentication succeeded</li>
+</ul>
+</li>
+<li>AuthenticationSchemes
 <ul>
-<li>validate its range</li>
+<li>only considers given schemes</li>
+<li>same as default</li>
+</ul>
+</li>
+<li>Roles
+<ul>
+<li>checks claims principal</li>
+</ul>
+</li>
+<li>Policy
+<ul>
+<li>checks policy requirements</li>
 </ul>
 </li>
 </ul>
-</li>
-</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">[<span class="hljs-meta">HttpPost(<span class="hljs-string">&quot;none&quot;</span>)</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;IdentityResponse&gt; <span class="hljs-title">None</span>()</span> =&gt; GetPrincipalResponse();
+
+[<span class="hljs-meta">Authorize</span>]
+[<span class="hljs-meta">AllowAnonymous</span>]
+[<span class="hljs-meta">HttpPost(<span class="hljs-string">&quot;anonymous&quot;</span>)</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;IdentityResponse&gt; <span class="hljs-title">Anonymous</span>()</span> =&gt; GetPrincipalResponse();
+
+[<span class="hljs-meta">Authorize</span>]
+[<span class="hljs-meta">HttpPost(<span class="hljs-string">&quot;default&quot;</span>)</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;IdentityResponse&gt; <span class="hljs-title">Default</span>()</span> =&gt; GetPrincipalResponse();
+
+[<span class="hljs-meta">Authorize(AuthenticationSchemes = <span class="hljs-string">&quot;foo,bar&quot;</span>)</span>]
+[<span class="hljs-meta">HttpPost(<span class="hljs-string">&quot;schemes&quot;</span>)</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;IdentityResponse&gt; <span class="hljs-title">Schemes</span>()</span> =&gt; GetPrincipalResponse();
+
+[<span class="hljs-meta">Authorize(Roles = <span class="hljs-string">&quot;Admin,Owner&quot;</span>)</span>]
+[<span class="hljs-meta">HttpPost(<span class="hljs-string">&quot;roles&quot;</span>)</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;IdentityResponse&gt; <span class="hljs-title">Roles</span>()</span> =&gt; GetPrincipalResponse();
+
+[<span class="hljs-meta">Authorize(Policy = <span class="hljs-string">&quot;MinimumAge&quot;</span>)</span>]
+[<span class="hljs-meta">HttpPost(<span class="hljs-string">&quot;age&quot;</span>)</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;IdentityResponse&gt; <span class="hljs-title">Policy</span>()</span> =&gt; GetPrincipalResponse();
+</code></pre>
+</div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="18" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="should-configuration-ever-change">Should Configuration ever change?</h1>
 <div class="columns"><div class="columns-left">
-<h2 id="yes">yes</h2>
+<h1 id="claimrequirement">ClaimRequirement</h1>
 <ul>
-<li>disaster recovery</li>
-<li>scaling</li>
-<li>logging level</li>
-<li>leader change</li>
-<li>throttling</li>
+<li>Keeps claim type</li>
+<li>Keeps claim value</li>
+<li>is handled by <code>ClaimHandler</code></li>
 </ul>
-</div><div class="columns-right">
-<h1 id="no">no</h1>
+<br />
+<h1 id="claimhandler">ClaimHandler</h1>
 <ul>
-<li>runtime changes arent't tested</li>
-<li>servers under load
+<li>checks if user has required claim
 <ul>
-<li>processing customer data</li>
+<li>either fails or succeeds</li>
 </ul>
 </li>
-<li>inconsistent configurations</li>
-<li>human error</li>
 </ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ClaimRequirement</span> : <span class="hljs-title">IAuthorizationRequirement</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> ClaimType { <span class="hljs-keyword">get</span>; }
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> ClaimValue { <span class="hljs-keyword">get</span>; }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ClaimRequirement</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> claimType, <span class="hljs-built_in">string</span> claimValue</span>)</span>
+    {
+        ClaimType = claimType;
+        ClaimValue = claimValue;
+    }
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ClaimHandler</span> : <span class="hljs-title">AuthorizationHandler</span>&lt;<span class="hljs-title">ClaimRequirement</span>&gt;
+{
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> Task <span class="hljs-title">HandleRequirementAsync</span>(<span class="hljs-params">
+        AuthorizationHandlerContext context, ClaimRequirement requirement</span>)</span>
+    {
+        <span class="hljs-keyword">var</span> <span class="hljs-keyword">value</span> = context.User
+            .FindFirst(c =&gt; c.Type == requirement.ClaimType)?.Value;
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">value</span> == <span class="hljs-literal">null</span> || !<span class="hljs-keyword">value</span>.Equals(requirement.ClaimValue,
+            StringComparison.OrdinalIgnoreCase))
+        {
+            context.Fail();
+        }
+        <span class="hljs-keyword">else</span>
+        {
+            context.Succeed(requirement);
+        }
+        
+        <span class="hljs-keyword">return</span> Task.CompletedTask;
+    }
+}
+</code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="19" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<div class="columns"><div class="columns-left">
+<h1 id="claimpolicyprovider">ClaimPolicyProvider</h1>
+<ul>
+<li>creates policies from policy names</li>
+<li>if not claims policy, uses <code>DefaultAuthorizationPolicyProvider</code></li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ClaimPolicyProvider</span> : <span class="hljs-title">DefaultAuthorizationPolicyProvider</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ClaimPolicyProvider</span>(<span class="hljs-params">IOptions&lt;AuthorizationOptions&gt; options</span>)
+        : <span class="hljs-title">base</span>(<span class="hljs-params">options</span>)</span>
+    {
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">async</span> Task&lt;AuthorizationPolicy?&gt; GetPolicyAsync(
+        <span class="hljs-built_in">string</span> policyName)
+    {
+        <span class="hljs-keyword">var</span> isClaimsPolicy = policyName
+            .StartsWith(AuthorizeClaimAttribute.PolicyPrefix, StringComparison.Ordinal)
+        
+        <span class="hljs-keyword">if</span> (!isClaimsPolicy)
+        {
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> <span class="hljs-keyword">base</span>.GetPolicyAsync(policyName);
+        }
+
+        <span class="hljs-keyword">var</span> claim = policyName
+            .Substring(AuthorizeClaimAttribute.PolicyPrefix.Length).Split(<span class="hljs-string">&quot;=&quot;</span>);
+
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> AuthorizationPolicyBuilder()
+            .AddRequirements(<span class="hljs-keyword">new</span> ClaimRequirement(claim[<span class="hljs-number">0</span>], claim[<span class="hljs-number">1</span>]))
+            .Build();
+    }
+}
+</code></pre>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="20" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<div class="columns"><div class="columns-left">
+<h1 id="authorizeclaimattribute">AuthorizeClaimAttribute</h1>
+<ul>
+<li>gets key and value</li>
+<li>creates a policy name
+<ul>
+<li>needs to be deterministic</li>
+</ul>
+</li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">AuthorizeClaimAttribute</span> : <span class="hljs-title">AuthorizeAttribute</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> PolicyPrefix = <span class="hljs-string">&quot;Claims_&quot;</span>;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">AuthorizeClaimAttribute</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> claimType, <span class="hljs-built_in">string</span> claimValue</span>)</span>
+    {
+        Policy = <span class="hljs-string">$&quot;<span class="hljs-subst">{PolicyPrefix}</span><span class="hljs-subst">{claimType}</span>=<span class="hljs-subst">{claimValue}</span>&quot;</span>;
+    }
+}
+</code></pre>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="21" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<div class="columns"><div class="columns-left">
+<h1 id="usage">Usage</h1>
+<ul>
+<li>register custom types</li>
+<li>use the new attribute</li>
+<li>use multiple to get &quot;AND&quot;</li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">builder.Services.AddSingleton&lt;IAuthorizationHandler, ClaimHandler&gt;();
+builder.Services.AddSingleton&lt;IAuthorizationPolicyProvider, ClaimPolicyProvider&gt;();
+</code></pre>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">[<span class="hljs-meta">AuthorizeClaim(<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;Jarda&quot;</span>)</span>]
+[<span class="hljs-meta">AuthorizeClaim(<span class="hljs-string">&quot;purpose&quot;</span>, <span class="hljs-string">&quot;test&quot;</span>)</span>]
+[<span class="hljs-meta">HttpPost(<span class="hljs-string">&quot;claims&quot;</span>)</span>]
+<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;IdentityResponse&gt; <span class="hljs-title">Claims</span>()</span> =&gt; GetPrincipalResponse();
+</code></pre>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="22" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="exercise">Exercise</h1>
+<ul>
+<li>add JWT authentication to our TodoApp</li>
+<li>enforce authentication for all endpoints</li>
+<li>authorize POST, PUT and DELETE operations by &quot;Owner&quot; role</li>
+</ul>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="23" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="comfortability-vs-security">Comfortability vs security</h1>
+<ul>
+<li>expirations</li>
+<li>password constrains</li>
+<li>SFA vs 2FA vs MFA</li>
+</ul>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="24" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
 <h1 id="thank-you">Thank you!</h1>
