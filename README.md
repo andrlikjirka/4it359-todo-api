@@ -1,18 +1,18 @@
-## Exercise for this week
+Exercise for this week extends your last week's exercise.
 
-Implement a background service.
-The service should filter all incomplete todo items and then:
-
-- mark all past due todo items as priority 1
-- mark all due today todo items as priority 2
-- mark all due tomorrow todo items as priority 3
-
-The service should do its job each 5 seconds (it would be hours in reality, however, with seconds we will see results faster).
+- ensure you merged your exercise to `week03` branch
+- create a new branch on top of updated `week03` branch
+- write tests for your implementation
+   - unit tests
+   - integration tests
+   - end to end tests
+- push and create a pull request
+- let others review or find someone to do so
 
 ## Bonus
 
 <details>
 
-If you're confident in writing tests, write some tests for the background service you'll have implemented.
+If you're confident in writing tests, write some tests for `ModelValidationAttribute` class.
 
 </details>
