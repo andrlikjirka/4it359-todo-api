@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+﻿using System.Configuration;
+using Microsoft.EntityFrameworkCore;
 using TodoApp.Api.Configuration;
 using TodoApp.Api.Data;
 using TodoApp.Api.Extensions;
@@ -10,6 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true);
 builder.Services.Configure<TaskCollectorOptions>(builder.Configuration.GetSection("TaskCollector"));
+builder.Services.AddOptions<TaskCollectorOptions>()
+    .Bind(builder.Configuration.GetSection("TaskCollector"))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 
 builder.Services.AddControllers();
 builder.Services
@@ -18,16 +22,12 @@ builder.Services
         options.UseInMemoryDatabase(builder.Configuration.GetValue<string>("Database:Name") ?? "default");
     })
     .AddScoped<IItemRepository, ItemRepository>()
-    .AddHostedService<TaskCollector>()
     .AddHostedService<TaskMarker>();
 
-/*
- * if (builder.Configuration.Get<TaskCollectorOptions>().EnableTaskCollector)
-   {
-       builder.Services.AddHostedService<TaskCollector>();
-   }
- */
-
+if (builder.Configuration.GetValue<bool>("TaskCollector:EnableTaskCollector"))
+{
+    builder.Services.AddHostedService<TaskCollector>();
+}
 
 var app = builder.Build();
 

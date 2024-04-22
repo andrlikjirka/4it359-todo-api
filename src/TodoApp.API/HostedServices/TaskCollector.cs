@@ -28,13 +28,13 @@ public class TaskCollector : BackgroundService
                 var repository = scope.ServiceProvider.GetRequiredService<IItemRepository>();
                 var items = await repository.List();
 
-                foreach (var item in items.Where(x =>  x.Progress > 99 ))
+                foreach (var item in items.Where(x =>  x.Priority > _options.MinPriorityThreshold && x.Progress > 99 ))
                 {
                     await repository.Remove(item);
                 }
             }
             
-            await Task.Delay(5000, stoppingToken);
+            await Task.Delay(_options.SweepInterval, stoppingToken);
         }
     }
 }
