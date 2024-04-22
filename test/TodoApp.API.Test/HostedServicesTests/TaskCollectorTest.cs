@@ -29,7 +29,9 @@ public class TaskCollectorTest
         // Mock configuration options
         var taskCollectorOptions = new TaskCollectorOptions
         {
-            EnableTaskCollector = true
+            EnableTaskCollector = true,
+            SweepInterval = 6000,
+            MinPriorityThreshold = 3
         };
         var optionsMock = Substitute.For<IOptions<TaskCollectorOptions>>();
         optionsMock.Value.Returns(taskCollectorOptions);
