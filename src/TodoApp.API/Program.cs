@@ -9,7 +9,8 @@ using TodoApp.Api.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true);
-builder.Services.Configure<TaskCollectorOptions>(builder.Configuration.GetSection("TaskCollector"));
+
+//builder.Services.Configure<TaskCollectorOptions>(builder.Configuration.GetSection("TaskCollector"));
 builder.Services.AddOptions<TaskCollectorOptions>()
     .Bind(builder.Configuration.GetSection("TaskCollector"))
     .ValidateDataAnnotations()
