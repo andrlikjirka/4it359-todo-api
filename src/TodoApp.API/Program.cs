@@ -12,7 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true);
 
-// authentication
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme =
@@ -35,9 +34,9 @@ builder.Services.AddAuthentication(options =>
             ValidateAudience = false,
         };
     });
-//builder.Services.AddAuthorization();
+builder.Services.AddAuthorization();
 
-builder.Services.Configure<TaskCollectorOptions>(builder.Configuration.GetSection("TaskCollector"));
+//builder.Services.Configure<TaskCollectorOptions>(builder.Configuration.GetSection("TaskCollector"));
 builder.Services.AddOptions<TaskCollectorOptions>()
     .Bind(builder.Configuration.GetSection("TaskCollector"))
     .ValidateDataAnnotations()
