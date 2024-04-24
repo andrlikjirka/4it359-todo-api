@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoApp.Api.Data;
 using TodoApp.Api.Extensions;
@@ -22,8 +23,9 @@ public class ItemsController : Controller
     {
         return await _itemRepository.List();
     }
-
+    
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<ActionResult<Item>> Get(int id)
     {
         var item = await _itemRepository.Find(id);

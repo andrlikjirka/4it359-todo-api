@@ -1,5 +1,7 @@
-﻿using System.Configuration;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using TodoApp.Api.Configuration;
 using TodoApp.Api.Data;
 using TodoApp.Api.Extensions;
@@ -9,6 +11,32 @@ using TodoApp.Api.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true);
+
+// authentication
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme =
+            JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme =
+            JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("Security:TokenSecret"))),
+            IssuerSigningKeyResolver = (_, _, _, parameters) => new[] { parameters.IssuerSigningKey },
+            ValidateIssuerSigningKey = true,
+            ValidateIssuer = false,
+            ValidateAudience = false,
+        };
+    });
+//builder.Services.AddAuthorization();
+
 builder.Services.Configure<TaskCollectorOptions>(builder.Configuration.GetSection("TaskCollector"));
 builder.Services.AddOptions<TaskCollectorOptions>()
     .Bind(builder.Configuration.GetSection("TaskCollector"))
@@ -41,6 +69,9 @@ app.UseMiddleware<RequestBodyLengthMiddleware>();
 app.MapControllers();
 app.SeedData();
 
-app.Run(); 
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.Run();
 
 public partial class Program;
