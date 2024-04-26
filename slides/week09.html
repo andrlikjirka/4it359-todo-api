@@ -13,7 +13,7 @@
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
 <h1 id="web-application-development-on-net-platform">Web application development on .NET platform</h1>
-<h3 id="authentication-and-authorization">Authentication and authorization</h3>
+<h3 id="observability">Observability</h3>
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
   mermaid.initialize({ startOnLoad: true });
@@ -22,12 +22,14 @@
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="2" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="authentication">Authentication</h1>
+<h1 id="what-is-observability">What is observability</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>who user is</li>
-<li>user is a set of properties</li>
-<li>user needs to prove</li>
+<li>system property</li>
+<li>can we reason abou the system?</li>
+<li>logs</li>
+<li>traces</li>
+<li>metrics</li>
 </ul>
 </div><div class="columns-right">
 <img src="authentication.webp" />
@@ -36,762 +38,597 @@
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="3" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="provable-properties">Provable properties</h1>
+<h1 id="logs">logs</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>things user can prove about himself</li>
-<li>something he knows
+<li>most customizable</li>
+<li>usually stringified</li>
+<li>can be parsed
 <ul>
-<li>password, personal information</li>
-</ul>
-</li>
-<li>something he has
-<ul>
-<li>tokens, chip cards, certificates</li>
-</ul>
-</li>
-<li>something he is
-<ul>
-<li>biometrics like fingerprints</li>
-</ul>
-</li>
-<li>where he is
-<ul>
-<li>IP address, ISP</li>
+<li>data lake</li>
+<li>data warehouse</li>
+<li>map reduce</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-<img src="auth-props.webp" />
-<ul>
-<li>a reference
-<ul>
-<li>identity providers</li>
-</ul>
-</li>
-</ul>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-text">Configuring middleware: AuthenticationMiddleware initialized at [timestamp]
+Responding with 404 Not Found for URL &#x27;/api/products/999
+Executed query &#x27;SELECT * FROM products WHERE category = &#x27;books&#x27;&#x27; in 85ms
+</code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="4" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="authentication-protocols">Authentication protocols</h1>
+<h1 id="enhanced-logs">enhanced logs</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>Basic</li>
-<li>Digest</li>
-<li>HMAC</li>
-<li>Token</li>
-<li>OAuth</li>
-<li>OpenID Connect</li>
-<li>SAML</li>
-<li>SAS Token</li>
-<li>PoP token</li>
+<li>common information
+<ul>
+<li>timestamp</li>
+<li>instance ID</li>
+<li>trace ID</li>
+</ul>
+</li>
 </ul>
 </div><div class="columns-right">
-<img src="auth-methods.webp" />
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-text">2024-04-21T12:34:56.789Z|232553|fh234jfd23|
+  Configuring middleware: AuthenticationMiddleware initialized at [timestamp]
+2024-04-21T12:34:56.789Z|232553|fh234jfd23|
+  Responding with 404 Not Found for URL &#x27;/api/products/999
+2024-04-21T12:34:56.789Z|232553|fh234jfd23|
+  Executed query &#x27;SELECT * FROM products WHERE category = &#x27;books&#x27;&#x27; in 85ms
+
+232553|fh234jfd23
+2024-04-21T12:34:56.789Z|
+  Configuring middleware: AuthenticationMiddleware initialized at [timestamp]
+2024-04-21T12:34:56.789Z|
+  Responding with 404 Not Found for URL &#x27;/api/products/999
+2024-04-21T12:34:56.789Z|
+  Executed query &#x27;SELECT * FROM products WHERE category = &#x27;books&#x27;&#x27; in 85ms
+</code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="5" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="basic-authentication">Basic authentication</h1>
+<h1 id="data-classification">data classification</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>uses Authorization header</li>
-<li>format: <code>Basic &lt;payload&gt;</code></li>
-<li>payload <code>name:password</code> in base64</li>
-<li>needs HTTPS</li>
+<li>public information
+<ul>
+<li>generally known information
+<ul>
+<li>published content</li>
+<li>shared data</li>
+</ul>
+</li>
+<li>no risks when leaked</li>
+<li>no special measures</li>
+</ul>
+</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">GET /resource HTTP/1.1
-Host: example.com
-Authorization: Basic QWxpY2U6U2VjcmV0UGFzc3dvcmQxMjM=
-</code></pre>
+<img src="auth-props.webp" />
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="6" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="digest-authentication">Digest authentication</h1>
+<h1 id="data-classification-1">data classification</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>tries to overcome basic auth issues</li>
-<li>challenge flow auth
+<li>operational information (OI)
 <ul>
-<li>no plain-text password</li>
+<li>information created by us about user
+<ul>
+<li>pseudo-identifiers</li>
+<li>unlinkable times, numbers...</li>
 </ul>
 </li>
-<li>needs additional calls</li>
+<li>risks when leaked
+<ul>
+<li>identity misuse</li>
+<li>reputation damage</li>
+</ul>
+</li>
+<li>measures
+<ul>
+<li>multiple eyes access</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">HTTP/1.1 401 Unauthorized
-WWW-Authenticate: Digest realm=<span class="hljs-string">&quot;example.com&quot;</span>,
-  qop=<span class="hljs-string">&quot;auth&quot;</span>,nonce=<span class="hljs-string">&quot;dcd98b7102dd2f0e8b11d0f600bfb0c093&quot;</span>,
-  opaque=<span class="hljs-string">&quot;5ccc069c403ebaf9f0171e9517f40e41&quot;</span>
-</code></pre>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">GET /resource HTTP/1.1
-Host: example.com
-Authorization: Digest username=<span class="hljs-string">&quot;Alice&quot;</span>,
-  realm=<span class="hljs-string">&quot;example.com&quot;</span>,nonce=<span class="hljs-string">&quot;dcd98b7102dd2f0e8b11d0f600bfb0c093&quot;</span>,
-  uri=<span class="hljs-string">&quot;/resource&quot;</span>,response=<span class="hljs-string">&quot;6629fae49393a05397450978507c4ef1&quot;</span>,
-  opaque=<span class="hljs-string">&quot;5ccc069c403ebaf9f0171e9517f40e41&quot;</span>,qop=auth,nc=00000001,
-  cnonce=<span class="hljs-string">&quot;0a4f113b&quot;</span>
-</code></pre>
+<img src="auth-props.webp" />
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="7" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="hmac-authentication">HMAC authentication</h1>
+<h1 id="data-classification-2">data classification</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>Hash-Based Message Authentication Code</li>
-<li>signature covers request parts
+<li>Personal / Organizational identifiable information (PII, OII)
 <ul>
-<li>body</li>
-<li>date</li>
-<li>path</li>
+<li>identify a person on its own or in context
+<ul>
+<li>birth number</li>
+<li>phone number</li>
+<li>address</li>
 </ul>
 </li>
-<li>prevents sending plain-text password</li>
-<li>doesn't need additional calls
+<li>risks when leaked
 <ul>
-<li>needs additional CPU cycles</li>
+<li>user can be linked</li>
 </ul>
 </li>
-<li>prevents replay attacks, body tampering...</li>
+<li>measures
+<ul>
+<li>encrypted or hashed</li>
+<li>user initiated access</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">POST /api/update HTTP/1.1
-Host: example.com
-Content-Type: application/json
-Date: Tue, 10 Nov 2020 08:00:00 GMT
-Authorization: HMAC Date,
-  Content-Length,3yxb9caBdq+uv3hL4Bg3xgTTXQzP6+8Q0Y1kbbY1uQ8=
-Content-Length: 31
-
-{<span class="hljs-string">&quot;name&quot;</span>:<span class="hljs-string">&quot;John Doe&quot;</span>,<span class="hljs-string">&quot;age&quot;</span>:30}
-</code></pre>
+<img src="auth-props.webp" />
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="8" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="bearer-authentication">Bearer authentication</h1>
+<h1 id="data-classification-3">data classification</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>a family of token-based flows</li>
-<li>typically uses JWT token</li>
+<li>customer data
+<ul>
+<li>information created by customer
+<ul>
+<li>order history</li>
+<li>chat messages</li>
+<li>configurations</li>
+<li>bussines plans</li>
+</ul>
+</li>
+<li>risks when leaked
+<ul>
+<li>personal details misuse</li>
+</ul>
+</li>
+<li>measures
+<ul>
+<li>encrypted (ideally by BYOC)</li>
+<li>locality and temporarity</li>
+<li>user assisted access</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">GET /resource HTTP/1.1
-Host: example.com
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
-  eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.
-  SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
-</code></pre>
+<img src="auth-props.webp" />
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="9" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="jwt-token">JWT token</h1>
+<h1 id="tracing">tracing</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>tampering resistant token format</li>
-<li>header &amp; payload
+<li>traces calls through multiple services
 <ul>
-<li>JSON</li>
-<li>base64 encoded</li>
+<li>performance evaluation</li>
+<li>bottleneck search</li>
+<li>hotspot and SPoF identification</li>
 </ul>
 </li>
-<li>signature
+<li>Open Telemetry format
 <ul>
-<li>header and payload</li>
-<li>using cypher or certificate</li>
+<li>version</li>
+<li>trace id</li>
+<li>span id</li>
+<li>flags</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-  .eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ
-  .SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-text">00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
 </code></pre>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-json"><span class="hljs-punctuation">{</span>
-  <span class="hljs-attr">&quot;alg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;HS256&quot;</span><span class="hljs-punctuation">,</span>
-  <span class="hljs-attr">&quot;typ&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;JWT&quot;</span>
-<span class="hljs-punctuation">}</span>
-</code></pre>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-json"><span class="hljs-punctuation">{</span>
-  <span class="hljs-attr">&quot;sub&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1234567890&quot;</span><span class="hljs-punctuation">,</span>
-  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span><span class="hljs-punctuation">,</span>
-  <span class="hljs-attr">&quot;admin&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
-  <span class="hljs-attr">&quot;iat&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1516239022</span>
-<span class="hljs-punctuation">}</span>
-</code></pre>
+<ul>
+<li>00
+<ul>
+<li>version prefix</li>
+</ul>
+</li>
+<li>4bf92f3577b34da6a3ce929d0e0e4736
+<ul>
+<li>trace-id (128-bit)</li>
+</ul>
+</li>
+<li>00f067aa0ba902b7
+<ul>
+<li>span-id (64-bit)</li>
+</ul>
+</li>
+<li>01
+<ul>
+<li>trace-flags (sampled)</li>
+</ul>
+</li>
+</ul>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="10" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="oauth-authentication">OAuth authentication</h1>
-<div class="columns"><div class="columns-left">
-<ul>
-<li>delegated authentication</li>
-<li>multiple flows</li>
-<li>focuses more on authorization</li>
-<li>uses access tokens
-<ul>
-<li>usually JWT token</li>
-</ul>
-</li>
-<li>Microsoft, Google, Facebook...</li>
-<li>OpenID Connect
-<ul>
-<li>extends OAuth with ID tokens</li>
-</ul>
-</li>
-</ul>
-</div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">POST /token HTTP/1.1
-Host: authorization-server.com
-Content-Type: application/x-www-form-urlencoded
-
-grant_type=authorization_code&amp;
-  code=AUTH_CODE_RECEIVED_FROM_AUTHORIZATION&amp;
-  redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb&amp;
-  client_id=CLIENT_ID&amp;
-  client_secret=CLIENT_SECRET
-</code></pre>
-</div></div>
+<h1 id="tracing-1">tracing</h1>
+<img src="traces_spans.png" />
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="11" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<div class="columns"><div class="columns-left" style="margin-top:10%">
-<h1 id="identity">Identity</h1>
+<h1 id="metrics">metrics</h1>
+<div class="columns"><div class="columns-left">
 <ul>
-<li>HttpContext.User
+<li>measurements indicating a behaviour</li>
+<li>purpose
 <ul>
-<li>ClaimsPrincipal</li>
-</ul>
-</li>
-<li>identity
-<ul>
-<li>what user is</li>
-<li>visitor, admin, owner</li>
-</ul>
-</li>
-<li>claim
-<ul>
-<li>a truth about its identity</li>
+<li>performance audit</li>
+<li>hotspot identification</li>
+<li>monitoring and alerting</li>
+<li>debugging and trouble-shooting</li>
 </ul>
 </li>
 </ul>
-</div><div class="columns-right mermaid">
-    classDiagram
-        IPrincipal --|&gt; IIdentity : has
-        ClaimsIdentity --|&gt; Claim : has
-        ClaimsIdentity --|&gt; IIdentity: implements
-        ClaimsPrincipal --|&gt; ClaimsIdentity : has
-        ClaimsPrincipal --|&gt; IPrincipal : implements
-        HtpContext --|&gt; ClaimsPrincipal: has
-        class IIdentity {
-            +Name: string?
-            +AuthenticationType: string?
-            IsAuthenticated: bool
-        }
-        class IPrincipal {
-            +Identity: IIdentity?
-            +IsInRole(role: string) bool
-        }
-        class ClaimsPrincipal{
-            +Identity: IIdentity
-            +Identities: IEnumerable&ltClaimsIdentity&gt;
-            +IsInRole(role: string) bool
-        }
-        class ClaimsIdentity {
-            +Name: string?
-            +AuthenticationType: string?
-            IsAuthenticated: bool
-        }
-        class Claim {
-            +Value: string
-            +Type: string
-            +Issuer: string
-            +ValueType: string
-        }
+</div><div class="columns-right">
+<ul>
+<li>
+<p>multiple parts</p>
+<ul>
+<li>identifier</li>
+<li>timestamp</li>
+<li>value</li>
+<li>dimensions
+<ul>
+<li>name/value pairs</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>cardinality</p>
+<ul>
+<li>unique dimension values</li>
+<li>high cardinality is bad
+<ul>
+<li>storage, performance, interpretation...</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="12" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="claim">Claim</h1>
 <div class="columns"><div class="columns-left">
+<h1 id="metric-types">metric types</h1>
 <ul>
-<li>a true statement</li>
-<li>key-name pair
+<li>counter
 <ul>
-<li>claim type</li>
-<li>claim value</li>
+<li>counts occurences of events</li>
+<li>increasing, dicreasing</li>
+<li>monotonic, non-monotonic</li>
 </ul>
 </li>
-<li>formalized names
+<li>gauge
 <ul>
-<li>namespace + name</li>
+<li>reports a measurement at a time</li>
+<li>CPU usage</li>
+</ul>
+</li>
+<li>histogram
+<ul>
+<li>captures distribution of values</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">internal</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> ClaimTypeNamespace =
-  <span class="hljs-string">&quot;http://schemas.microsoft.com/ws/2008/06/identity/claims&quot;</span>;
- 
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> AuthenticationInstant =
-  ClaimTypeNamespace + <span class="hljs-string">&quot;/authenticationinstant&quot;</span>;
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> AuthenticationMethod =
-  ClaimTypeNamespace + <span class="hljs-string">&quot;/authenticationmethod&quot;</span>;
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> CookiePath =
-  ClaimTypeNamespace + <span class="hljs-string">&quot;/cookiepath&quot;</span>;
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> Dsa =
-  ClaimTypeNamespace + <span class="hljs-string">&quot;/dsa&quot;</span>;
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> Expiration =
-  ClaimTypeNamespace + <span class="hljs-string">&quot;/expiration&quot;</span>;
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> Expired =
-  ClaimTypeNamespace + <span class="hljs-string">&quot;/expired&quot;</span>;
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> GroupSid =
-  ClaimTypeNamespace + <span class="hljs-string">&quot;/groupsid&quot;</span>;
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> IsPersistent =
-  ClaimTypeNamespace + <span class="hljs-string">&quot;/ispersistent&quot;</span>;
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> Role =
-  ClaimTypeNamespace + <span class="hljs-string">&quot;/role&quot;</span>;
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> SerialNumber =
-  ClaimTypeNamespace + <span class="hljs-string">&quot;/serialnumber&quot;</span>;
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> UserData =
-  ClaimTypeNamespace + <span class="hljs-string">&quot;/userdata&quot;</span>;
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> Version =
-  ClaimTypeNamespace + <span class="hljs-string">&quot;/version&quot;</span>;
-</code></pre>
+<h1 id="metric-processing">metric processing</h1>
+<ul>
+<li>creation</li>
+<li>client aggregation</li>
+<li>export</li>
+<li>store</li>
+<li>system aggregation</li>
+<li>presentation</li>
+</ul>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="13" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
+<h1 id="ilogger">Ilogger</h1>
 <div class="columns"><div class="columns-left">
-<h1 id="addauthentication">AddAuthentication</h1>
 <ul>
-<li>registers relevant types in DI</li>
-<li>configures authentication schemes</li>
-<li>we add JWT bearer auth
-<ul>
-<li>built-in</li>
-<li>extremely customizable</li>
-</ul>
-</li>
+<li>general interface</li>
+<li>throughout the whole dotnet</li>
+<li>generic version</li>
+<li>lot of extensions</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">builder.Services.AddAuthentication(options =&gt;
-    {
-        options.DefaultAuthenticateScheme =
-            JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme =
-            JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =&gt;
-    {
-        options.RequireHttpsMetadata = <span class="hljs-literal">false</span>;
-        options.SaveToken = <span class="hljs-literal">true</span>;
-        options.TokenValidationParameters = <span class="hljs-keyword">new</span>()
-        {
-            ValidateIssuerSigningKey = <span class="hljs-literal">true</span>,
-            IssuerSigningKey = <span class="hljs-keyword">new</span> SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration.GetValue&lt;<span class="hljs-built_in">string</span>&gt;(<span class="hljs-string">&quot;Security:TokenSecret&quot;</span>))),
-            IssuerSigningKeyResolver = (_, _, _, parameters) =&gt; <span class="hljs-keyword">new</span>[] { parameters.IssuerSigningKey },
-            ValidateIssuer = <span class="hljs-literal">false</span>,
-            ValidateAudience = <span class="hljs-literal">false</span>,
-        };
-    });
-</code></pre>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">[<span class="hljs-meta">Authorize</span>]
-[<span class="hljs-meta">HttpPost</span>]
-[<span class="hljs-meta">ModelValidation</span>]
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;ActionResult&lt;Item&gt;&gt; Post(CreateItemRequest request)
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">ILogger</span>
 {
-    <span class="hljs-keyword">var</span> item = <span class="hljs-keyword">await</span> _itemRepository.Add(request.ToItem());
-    <span class="hljs-keyword">return</span> CreatedAtAction(<span class="hljs-keyword">nameof</span>(Get), <span class="hljs-keyword">new</span> { id = item.Id }, item);
+    <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Log</span>&lt;<span class="hljs-title">TState</span>&gt;(<span class="hljs-params">
+      LogLevel logLevel,
+      EventId eventId,
+      TState state,
+      Exception? exception,
+      Func&lt;TState, Exception?, <span class="hljs-built_in">string</span>&gt; formatter</span>)</span>;
+
+    <span class="hljs-function"><span class="hljs-built_in">bool</span> <span class="hljs-title">IsEnabled</span>(<span class="hljs-params">LogLevel logLevel</span>)</span>;
+
+    IDisposable? BeginScope&lt;TState&gt;(TState state) <span class="hljs-keyword">where</span> TState : <span class="hljs-keyword">notnull</span>;
 }
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">ILogger</span>&lt;<span class="hljs-keyword">out</span> <span class="hljs-title">TCategoryName</span>&gt; : <span class="hljs-title">ILogger</span>
+{
+}
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogTrace</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogTrace</span>(<span class="hljs-params">Exception exception, <span class="hljs-built_in">string</span> message, <span class="hljs-keyword">params</span> <span class="hljs-built_in">object</span>[] args</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogDebug</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogDebug</span>(<span class="hljs-params">Exception exception, <span class="hljs-built_in">string</span> message, <span class="hljs-keyword">params</span> <span class="hljs-built_in">object</span>[] args</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogInformation</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogInformation</span>(<span class="hljs-params">Exception exception, <span class="hljs-built_in">string</span> message, <span class="hljs-keyword">params</span> <span class="hljs-built_in">object</span>[] args</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogWarning</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogWarning</span>(<span class="hljs-params">Exception exception, <span class="hljs-built_in">string</span> message, <span class="hljs-keyword">params</span> <span class="hljs-built_in">object</span>[] args</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogError</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogError</span>(<span class="hljs-params">Exception exception, <span class="hljs-built_in">string</span> message, <span class="hljs-keyword">params</span> <span class="hljs-built_in">object</span>[] args</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogCritical</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogCritical</span>(<span class="hljs-params">Exception exception, <span class="hljs-built_in">string</span> message, <span class="hljs-keyword">params</span> <span class="hljs-built_in">object</span>[] args</span>)</span>;
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="14" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
+<h1 id="log-levels">log levels</h1>
 <div class="columns"><div class="columns-left">
-<h1 id="implementing-basic-auth">Implementing basic auth</h1>
 <ul>
-<li>just for example</li>
-<li>not recommended</li>
-<li>basic auth handler is missing intentionally</li>
+<li>critical
+<ul>
+<li>need to stop immediately</li>
+</ul>
+</li>
+<li>error
+<ul>
+<li>investigate and fix</li>
+</ul>
+</li>
+<li>warning
+<ul>
+<li>shouldn't happen but not severe</li>
+</ul>
+</li>
+<li>information
+<ul>
+<li>audit information</li>
+</ul>
+</li>
+<li>debug
+<ul>
+<li>root cause identification</li>
+</ul>
+</li>
+<li>trace
+<ul>
+<li>everything</li>
+</ul>
+</li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">BasicHandler</span> : <span class="hljs-title">AuthenticationHandler</span>&lt;<span class="hljs-title">AuthenticationSchemeOptions</span>&gt;
-{
-    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IBasicValidator _userRepository;
-    
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">BasicHandler</span>(<span class="hljs-params">
-            IOptionsMonitor&lt;AuthenticationSchemeOptions&gt; options,
-            ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock,
-            IBasicValidator userRepository</span>)
-        : <span class="hljs-title">base</span>(<span class="hljs-params">options, logger, encoder, clock</span>)</span>
-    { 
-        _userRepository = userRepository;
-    }
-
-    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">async</span> Task&lt;AuthenticateResult&gt; <span class="hljs-title">HandleAuthenticateAsync</span>()</span>
-    {
-        <span class="hljs-keyword">var</span> header = Request.Headers[<span class="hljs-string">&quot;Authorization&quot;</span>];
-        <span class="hljs-keyword">if</span> (header.Count == <span class="hljs-number">0</span> || !((<span class="hljs-built_in">string</span>)header).StartsWith(
-                <span class="hljs-string">&quot;Basic &quot;</span>, StringComparison.OrdinalIgnoreCase))
-        {
-            <span class="hljs-keyword">return</span> AuthenticateResult.NoResult();
-        }
-        <span class="hljs-keyword">var</span> headerValue = header.ToString()[<span class="hljs-number">7.</span>.].Trim();
-        <span class="hljs-keyword">var</span> credentialBytes = Convert.FromBase64String(headerValue);
-        <span class="hljs-keyword">var</span> credentials = Encoding.UTF8.GetString(credentialBytes).Split(<span class="hljs-string">&#x27;:&#x27;</span>);
-        <span class="hljs-keyword">if</span> (credentials.Length != <span class="hljs-number">2</span>)
-        {
-            <span class="hljs-keyword">return</span> AuthenticateResult.Fail(<span class="hljs-string">&quot;Invalid Authorization header format.&quot;</span>);
-        }
-
-        <span class="hljs-keyword">if</span> (!_userRepository.Validate(credentials[<span class="hljs-number">0</span>], credentials[<span class="hljs-number">1</span>]))
-        {
-            <span class="hljs-keyword">return</span> AuthenticateResult.Fail(<span class="hljs-string">&quot;Invalid username or password.&quot;</span>);
-        }
-
-        <span class="hljs-keyword">var</span> claims = <span class="hljs-keyword">new</span>[] {
-            <span class="hljs-keyword">new</span> Claim(ClaimTypes.NameIdentifier, credentials[<span class="hljs-number">0</span>]),
-            <span class="hljs-keyword">new</span> Claim(ClaimTypes.Name, credentials[<span class="hljs-number">1</span>]),
-        };
-
-        <span class="hljs-keyword">var</span> principal = <span class="hljs-keyword">new</span> ClaimsPrincipal(
-            <span class="hljs-keyword">new</span> ClaimsIdentity(claims, Scheme.Name));
-        <span class="hljs-keyword">return</span> AuthenticateResult.Success(
-            <span class="hljs-keyword">new</span> AuthenticationTicket(principal, Scheme.Name));
-    }
-}
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-json"><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;Logging&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;LogLevel&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+            <span class="hljs-attr">&quot;Default&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Information&quot;</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-attr">&quot;Microsoft&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Warning&quot;</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-attr">&quot;Microsoft.Hosting.Lifetime&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Information&quot;</span>
+        <span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="15" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
+<h1 id="registration">Registration</h1>
 <div class="columns"><div class="columns-left">
-<h1 id="chain-of-responsibility">Chain of responsibility</h1>
 <ul>
-<li>decouples sender from receivers
-<ul>
-<li>extensibility</li>
-<li>testability</li>
-<li>isolation</li>
+<li>adds logging mechanism</li>
+<li>adds outputs</li>
+<li>filtering</li>
+<li>advanced configuration</li>
 </ul>
-</li>
-</ul>
-</div><div class="columns-right mermaid">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-mermaid">flowchart TD
-    subgraph ASPNET [&quot;ASP.NET Authorization&quot;]
-        A[(&quot;Requirements&quot;)]
-        B[(&quot;Handler 1&quot;)]
-        C[(&quot;Handler 2&quot;)]
-        D[(&quot;AuthorizationResult&quot;)]
-        A --&gt;|foreach| B
-        B --&gt;|Not sure| C
-        C --&gt;|success/failure| D
-    end
-    subgraph  
-        client[(&quot;Client&quot;)]
-        h1[(&quot;Handler 1&quot;)]
-        h2[(&quot;Handler 2&quot;)]
-        h3[(&quot;Handler 3&quot;)]
-        h4[(&quot;Handler 4&quot;)]
-        client --&gt;|Sends Request| h1
-        h1 --&gt;|Can't handle, pass on| h2
-        h2 --&gt;|Can't handle, pass on| h3
-        h3 --&gt;|Can handle, pass on| h4
-        h4 --&gt;|Can handle | client
-    end
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">builder.Logging.ClearProviders();
+builder.Logging.AddDebug();
+builder.Logging.AddSimpleConsole(options =&gt; options.IncludeScopes = <span class="hljs-literal">true</span>);
+
+<span class="hljs-comment">/************************************************************************/</span>
+
+builder.ConfigureLogging(logging =&gt;
+{
+    logging.ClearProviders();
+    logging.AddConsole(options =&gt;
+    {
+        options.LogToStandardErrorThreshold = LogLevel.Error;
+    });
+    logging.AddDebug();
+    logging.AddFilter(<span class="hljs-string">&quot;Microsoft&quot;</span>, LogLevel.Warning);
+    logging.AddFilter(<span class="hljs-string">&quot;System&quot;</span>, LogLevel.Error);
+});
+
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="16" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="setup-authorization">Setup authorization</h1>
+<h1 id="logging">logging</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>
-<p>AddAuthorization</p>
+<li>use extension methods
 <ul>
-<li>registers services</li>
-<li>configuration</li>
+<li>interface is primarily for frameworks</li>
 </ul>
 </li>
-<li>
-<p>UseAuthorization</p>
+<li>don't use string operations
 <ul>
-<li>Checks UseAuthorization</li>
-<li>Adds a middleware</li>
+<li>use built-in formatter instead</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">var</span> builder = WebApplication.CreateBuilder(args);
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">OrderService</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> ILogger&lt;OrderService&gt; _logger;
 
-<span class="hljs-comment">/*...*/</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">OrderService</span>(<span class="hljs-params">ILogger&lt;OrderService&gt; logger, ITransaction transaction</span>)</span>
+    {
+        _logger = logger;
+    }
 
-builder.Services.AddAuthentication();
-builder.Services.AddAuthorization();
-
-<span class="hljs-comment">/*...*/</span>
-
-<span class="hljs-keyword">var</span> app = builder.Build();
-
-<span class="hljs-comment">/*...*/</span>
-
-app.UseAuthentication();
-app.UseAuthorization();
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">GetProduct</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> id</span>)</span>
+    {
+      <span class="hljs-keyword">try</span>
+      {
+          <span class="hljs-keyword">var</span> order = transaction.Start(id);
+          _logger.LogInformation(<span class="hljs-string">&quot;Getting product with ID: {ProductId}&quot;</span>, id);
+          <span class="hljs-keyword">return</span> order;
+      }
+      <span class="hljs-keyword">catch</span> (Exception ex)
+      {
+          _logger.LogError(ex, <span class="hljs-string">&quot;Failed to get product with ID: {ProductId}&quot;</span>, id);
+      }
+    }
+}
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="17" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="authorizeattribute">AuthorizeAttribute</h1>
 <div class="columns"><div class="columns-left">
+<h1 id="logging-scopes">logging scopes</h1>
 <ul>
-<li>Default
+<li>creates logging context</li>
+<li>attached to all log instances</li>
+<li>use short scopes
 <ul>
-<li>checks if authentication succeeded</li>
+<li>performance ramifications</li>
 </ul>
 </li>
-<li>AuthenticationSchemes
+<li>use consistent key names
 <ul>
-<li>only considers given schemes</li>
-<li>same as default</li>
-</ul>
-</li>
-<li>Roles
-<ul>
-<li>checks claims principal</li>
-</ul>
-</li>
-<li>Policy
-<ul>
-<li>checks policy requirements</li>
+<li>avoid obfuscating your logs</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">[<span class="hljs-meta">HttpPost(<span class="hljs-string">&quot;none&quot;</span>)</span>]
-<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;IdentityResponse&gt; <span class="hljs-title">None</span>()</span> =&gt; GetPrincipalResponse();
-
-[<span class="hljs-meta">Authorize</span>]
-[<span class="hljs-meta">AllowAnonymous</span>]
-[<span class="hljs-meta">HttpPost(<span class="hljs-string">&quot;anonymous&quot;</span>)</span>]
-<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;IdentityResponse&gt; <span class="hljs-title">Anonymous</span>()</span> =&gt; GetPrincipalResponse();
-
-[<span class="hljs-meta">Authorize</span>]
-[<span class="hljs-meta">HttpPost(<span class="hljs-string">&quot;default&quot;</span>)</span>]
-<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;IdentityResponse&gt; <span class="hljs-title">Default</span>()</span> =&gt; GetPrincipalResponse();
-
-[<span class="hljs-meta">Authorize(AuthenticationSchemes = <span class="hljs-string">&quot;foo,bar&quot;</span>)</span>]
-[<span class="hljs-meta">HttpPost(<span class="hljs-string">&quot;schemes&quot;</span>)</span>]
-<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;IdentityResponse&gt; <span class="hljs-title">Schemes</span>()</span> =&gt; GetPrincipalResponse();
-
-[<span class="hljs-meta">Authorize(Roles = <span class="hljs-string">&quot;Admin,Owner&quot;</span>)</span>]
-[<span class="hljs-meta">HttpPost(<span class="hljs-string">&quot;roles&quot;</span>)</span>]
-<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;IdentityResponse&gt; <span class="hljs-title">Roles</span>()</span> =&gt; GetPrincipalResponse();
-
-[<span class="hljs-meta">Authorize(Policy = <span class="hljs-string">&quot;MinimumAge&quot;</span>)</span>]
-[<span class="hljs-meta">HttpPost(<span class="hljs-string">&quot;age&quot;</span>)</span>]
-<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;IdentityResponse&gt; <span class="hljs-title">Policy</span>()</span> =&gt; GetPrincipalResponse();
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">using</span>(_logger.BeginScope(
+  <span class="hljs-keyword">new</span> Dictionary&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">object</span>&gt; { { <span class="hljs-string">&quot;TransactionId&quot;</span>, order.Id } }))
+{
+    _logger.LogInformation(<span class="hljs-string">&quot;Starting transaction&quot;</span>);
+    _transaction.Start()
+    _logger.LogInformation(<span class="hljs-string">&quot;Transaction completed&quot;</span>);
+}
+</code></pre>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;Timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-04-21T12:34:56.789Z&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;Level&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Information&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;MessageTemplate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Starting transaction&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;Properties&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;TransactionId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;12345&quot;</span> <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+<span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;Timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-04-21T12:34:56.888Z&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;Level&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Information&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;MessageTemplate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Writing data&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;Properties&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;TransactionId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;12345&quot;</span> <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+<span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;Timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-04-21T12:34:58.789Z&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;Level&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Information&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;MessageTemplate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Transaction completed&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;Properties&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;TransactionId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;12345&quot;</span> <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="18" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
+<h1 id="open-telemetry">Open Telemetry</h1>
 <div class="columns"><div class="columns-left">
-<h1 id="claimrequirement">ClaimRequirement</h1>
 <ul>
-<li>Keeps claim type</li>
-<li>Keeps claim value</li>
-<li>is handled by <code>ClaimHandler</code></li>
-</ul>
-<br />
-<h1 id="claimhandler">ClaimHandler</h1>
+<li>consorcium-based logging standard</li>
+<li>define interfaces and concepts
 <ul>
-<li>checks if user has required claim
-<ul>
-<li>either fails or succeeds</li>
+<li>same for all providers</li>
+<li>same for all languages</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ClaimRequirement</span> : <span class="hljs-title">IAuthorizationRequirement</span>
-{
-    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> ClaimType { <span class="hljs-keyword">get</span>; }
-    <span class="hljs-keyword">public</span> <span class="hljs-built_in">string</span> ClaimValue { <span class="hljs-keyword">get</span>; }
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ClaimRequirement</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> claimType, <span class="hljs-built_in">string</span> claimValue</span>)</span>
-    {
-        ClaimType = claimType;
-        ClaimValue = claimValue;
-    }
-}
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ClaimHandler</span> : <span class="hljs-title">AuthorizationHandler</span>&lt;<span class="hljs-title">ClaimRequirement</span>&gt;
-{
-    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">override</span> Task <span class="hljs-title">HandleRequirementAsync</span>(<span class="hljs-params">
-        AuthorizationHandlerContext context, ClaimRequirement requirement</span>)</span>
-    {
-        <span class="hljs-keyword">var</span> <span class="hljs-keyword">value</span> = context.User
-            .FindFirst(c =&gt; c.Type == requirement.ClaimType)?.Value;
-        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">value</span> == <span class="hljs-literal">null</span> || !<span class="hljs-keyword">value</span>.Equals(requirement.ClaimValue,
-            StringComparison.OrdinalIgnoreCase))
-        {
-            context.Fail();
-        }
-        <span class="hljs-keyword">else</span>
-        {
-            context.Succeed(requirement);
-        }
-        
-        <span class="hljs-keyword">return</span> Task.CompletedTask;
-    }
-}
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">dotnet add package OpenTelemetry.Exporter.Console
+dotnet add package OpenTelemetry.Extensions.Hosting
+dotnet add package OpenTelemetry.Instrumentation.AspNetCore
+</code></pre>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">builder.Services.AddOpenTelemetry()
+  .ConfigureResource(resource =&gt; resource
+      .AddService(serviceName: <span class="hljs-string">&quot;TodoApp&quot;</span>))
+  .WithTracing(tracing =&gt; tracing
+      .AddAspNetCoreInstrumentation()
+      .AddConsoleExporter());
 </code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="19" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<div class="columns"><div class="columns-left">
-<h1 id="claimpolicyprovider">ClaimPolicyProvider</h1>
+<h1 id="exercise">Exercise</h1>
 <ul>
-<li>creates policies from policy names</li>
-<li>if not claims policy, uses <code>DefaultAuthorizationPolicyProvider</code></li>
+<li>add logging to ItemsController
+<ul>
+<li>think about multiple levels of logging</li>
+<li>ensure we can turn it off though app configuration</li>
 </ul>
-</div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ClaimPolicyProvider</span> : <span class="hljs-title">DefaultAuthorizationPolicyProvider</span>
-{
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ClaimPolicyProvider</span>(<span class="hljs-params">IOptions&lt;AuthorizationOptions&gt; options</span>)
-        : <span class="hljs-title">base</span>(<span class="hljs-params">options</span>)</span>
-    {
-    }
-
-    <span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">async</span> Task&lt;AuthorizationPolicy?&gt; GetPolicyAsync(
-        <span class="hljs-built_in">string</span> policyName)
-    {
-        <span class="hljs-keyword">var</span> isClaimsPolicy = policyName
-            .StartsWith(AuthorizeClaimAttribute.PolicyPrefix, StringComparison.Ordinal)
-        
-        <span class="hljs-keyword">if</span> (!isClaimsPolicy)
-        {
-            <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> <span class="hljs-keyword">base</span>.GetPolicyAsync(policyName);
-        }
-
-        <span class="hljs-keyword">var</span> claim = policyName
-            .Substring(AuthorizeClaimAttribute.PolicyPrefix.Length).Split(<span class="hljs-string">&quot;=&quot;</span>);
-
-        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> AuthorizationPolicyBuilder()
-            .AddRequirements(<span class="hljs-keyword">new</span> ClaimRequirement(claim[<span class="hljs-number">0</span>], claim[<span class="hljs-number">1</span>]))
-            .Build();
-    }
-}
-</code></pre>
-</div></div>
+</li>
+<li>add OpenTelemetry request instrumentation
+<ul>
+<li>export to console</li>
+</ul>
+</li>
+</ul>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="20" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<div class="columns"><div class="columns-left">
-<h1 id="authorizeclaimattribute">AuthorizeClaimAttribute</h1>
+<h1 id="observability-questions">Observability questions</h1>
 <ul>
-<li>gets key and value</li>
-<li>creates a policy name
-<ul>
-<li>needs to be deterministic</li>
+<li>price</li>
+<li>performance</li>
+<li>legistation</li>
 </ul>
-</li>
-</ul>
-</div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">AuthorizeClaimAttribute</span> : <span class="hljs-title">AuthorizeAttribute</span>
-{
-    <span class="hljs-keyword">public</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> PolicyPrefix = <span class="hljs-string">&quot;Claims_&quot;</span>;
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">AuthorizeClaimAttribute</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> claimType, <span class="hljs-built_in">string</span> claimValue</span>)</span>
-    {
-        Policy = <span class="hljs-string">$&quot;<span class="hljs-subst">{PolicyPrefix}</span><span class="hljs-subst">{claimType}</span>=<span class="hljs-subst">{claimValue}</span>&quot;</span>;
-    }
-}
-</code></pre>
-</div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="21" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
-" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
-;">
-<div class="columns"><div class="columns-left">
-<h1 id="usage">Usage</h1>
-<ul>
-<li>register custom types</li>
-<li>use the new attribute</li>
-<li>use multiple to get &quot;AND&quot;</li>
-</ul>
-</div><div class="columns-right">
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">builder.Services.AddSingleton&lt;IAuthorizationHandler, ClaimHandler&gt;();
-builder.Services.AddSingleton&lt;IAuthorizationPolicyProvider, ClaimPolicyProvider&gt;();
-</code></pre>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">[<span class="hljs-meta">AuthorizeClaim(<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;Jarda&quot;</span>)</span>]
-[<span class="hljs-meta">AuthorizeClaim(<span class="hljs-string">&quot;purpose&quot;</span>, <span class="hljs-string">&quot;test&quot;</span>)</span>]
-[<span class="hljs-meta">HttpPost(<span class="hljs-string">&quot;claims&quot;</span>)</span>]
-<span class="hljs-function"><span class="hljs-keyword">public</span> IEnumerable&lt;IdentityResponse&gt; <span class="hljs-title">Claims</span>()</span> =&gt; GetPrincipalResponse();
-</code></pre>
-</div></div>
-</section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="22" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
-" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
-;">
-<h1 id="exercise">Exercise</h1>
-<ul>
-<li>add JWT authentication to our TodoApp</li>
-<li>enforce authentication for all endpoints</li>
-<li>authorize POST, PUT and DELETE operations by &quot;Owner&quot; role</li>
-</ul>
-</section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="23" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
-" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
-;">
-<h1 id="comfortability-vs-security">Comfortability vs security</h1>
-<ul>
-<li>expirations</li>
-<li>password constrains</li>
-<li>SFA vs 2FA vs MFA</li>
-</ul>
-</section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="24" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
 <h1 id="thank-you">Thank you!</h1>
