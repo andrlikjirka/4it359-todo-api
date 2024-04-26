@@ -1,7 +1,10 @@
-﻿using TodoApp.Api.Data;
+using TodoApp.Api.Data;
 
 namespace TodoApp.Api.HostedServices;
 
+/**
+ * Background Task that periodically fetches items and removes items with progress 100 
+ */
 public class TaskCollector : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
@@ -10,7 +13,7 @@ public class TaskCollector : BackgroundService
     {
         _scopeFactory = scopeFactory;
     }
-
+    
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
@@ -20,7 +23,7 @@ public class TaskCollector : BackgroundService
                 var repository = scope.ServiceProvider.GetRequiredService<IItemRepository>();
                 var items = await repository.List();
 
-                foreach (var item in items.Where(x => x.Progress > 99))
+                foreach (var item in items.Where(x =>  x.Progress > 99 ))
                 {
                     await repository.Remove(item);
                 }

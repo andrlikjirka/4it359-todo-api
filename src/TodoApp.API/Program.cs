@@ -14,7 +14,8 @@ builder.Services
         options.UseInMemoryDatabase(builder.Configuration.GetValue<string>("Database:Name") ?? "default");
     })
     .AddScoped<IItemRepository, ItemRepository>()
-    .AddHostedService<TaskCollector>();
+    .AddHostedService<TaskCollector>()
+    .AddHostedService<TaskMarker>();
 
 var app = builder.Build();
 
@@ -27,6 +28,6 @@ app.UseRouting();
 app.MapControllers();
 app.SeedData();
 
-app.Run();
+app.Run(); 
 
 public partial class Program;
