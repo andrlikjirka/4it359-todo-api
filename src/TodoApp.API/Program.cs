@@ -2,6 +2,7 @@
 using TodoApp.Api.Data;
 using TodoApp.Api.Extensions;
 using TodoApp.Api.HostedServices;
+using TodoApp.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,8 @@ builder.Services
         options.UseInMemoryDatabase(builder.Configuration.GetValue<string>("Database:Name") ?? "default");
     })
     .AddScoped<IItemRepository, ItemRepository>()
-    .AddHostedService<TaskCollector>();
+    .AddHostedService<TaskCollector>()
+    .AddHostedService<TaskMarker>();
 
 var app = builder.Build();
 
@@ -24,9 +26,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
+app.UseMiddleware<RequestBodyLengthMiddleware>();
 app.MapControllers();
 app.SeedData();
 
-app.Run();
+app.Run(); 
 
 public partial class Program;
