@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using TodoApp.Api.Configuration;
 using TodoApp.Api.Data;
 using TodoApp.Api.Extensions;
@@ -36,7 +39,6 @@ builder.Services.AddAuthentication(options =>
     });
 builder.Services.AddAuthorization();
 
-//builder.Services.Configure<TaskCollectorOptions>(builder.Configuration.GetSection("TaskCollector"));
 builder.Services.AddOptions<TaskCollectorOptions>()
     .Bind(builder.Configuration.GetSection("TaskCollector"))
     .ValidateDataAnnotations()
@@ -55,6 +57,29 @@ if (builder.Configuration.GetValue<bool>("TaskCollector:EnableTaskCollector"))
 {
     builder.Services.AddHostedService<TaskCollector>();
 }
+
+// logging
+builder.Logging.ClearProviders();
+builder.Logging.AddSimpleConsole(options => { options.IncludeScopes = true; });
+if (builder.Configuration.GetValue<bool>("Observability:Enabled"))
+{
+    builder.Logging.AddFilter("TodoApp.Api", LogLevel.Information);
+    /* Alternative: Open Telemetry Logging
+    builder.Logging.AddOpenTelemetry(options =>
+    {
+        options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("TodoApp"));
+        options.AddConsoleExporter();
+        options.IncludeFormattedMessage = true;
+        options.ParseStateValues = true;
+    });*/
+    // Open Telemetry Tracing
+    builder.Services.AddOpenTelemetry()
+        .ConfigureResource(resource => resource.AddService("TodoApp"))
+        .WithTracing(tracing => tracing
+            .AddAspNetCoreInstrumentation()
+            .AddConsoleExporter());
+}
+// end: logging
 
 var app = builder.Build();
 

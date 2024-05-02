@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using TodoApp.Api.Controllers;
 using TodoApp.Api.Data;
@@ -15,8 +16,10 @@ public class ItemControllerTest
         var items = ItemGenerator.GenerateItems(2).ToArray();
         var itemRepositoryMock = Substitute.For<IItemRepository>();
         itemRepositoryMock.List().Returns(items);
+        var loggerMock = Substitute.For<ILogger<ItemsController>>();
+        loggerMock.LogInformation("");
 
-        var sut = new ItemsController(itemRepositoryMock);
+        var sut = new ItemsController(itemRepositoryMock, loggerMock);
         var result = await sut.Get();
         
         Assert.Equivalent(items, result.Value);
@@ -28,8 +31,10 @@ public class ItemControllerTest
         var item = ItemGenerator.GenerateItems(2).First();
         var itemRepositoryMock = Substitute.For<IItemRepository>();
         itemRepositoryMock.Find(item.Id).Returns(item);
+        var loggerMock = Substitute.For<ILogger<ItemsController>>();
+        loggerMock.LogInformation("");
 
-        var sut = new ItemsController(itemRepositoryMock);
+        var sut = new ItemsController(itemRepositoryMock, loggerMock);
         var result = await sut.Get(item.Id);
         
         Assert.Equivalent(item, result.Value);
@@ -40,8 +45,10 @@ public class ItemControllerTest
     {
         var itemRepositoryMock = Substitute.For<IItemRepository>();
         itemRepositoryMock.Find(int.MaxValue).Returns((Item)null!);
+        var loggerMock = Substitute.For<ILogger<ItemsController>>();
+        loggerMock.LogInformation("");
 
-        var sut = new ItemsController(itemRepositoryMock);
+        var sut = new ItemsController(itemRepositoryMock, loggerMock);
         var result = await sut.Get(int.MaxValue);
         
         Assert.IsType<NotFoundResult>(result.Result);
@@ -53,8 +60,10 @@ public class ItemControllerTest
         var item = ItemGenerator.GenerateItems(1).First();
         var itemRepositoryMock = Substitute.For<IItemRepository>();
         itemRepositoryMock.Update(item).Returns(item);
+        var loggerMock = Substitute.For<ILogger<ItemsController>>();
+        loggerMock.LogInformation("");
 
-        var sut = new ItemsController(itemRepositoryMock);
+        var sut = new ItemsController(itemRepositoryMock, loggerMock);
         var result = await sut.Put(item);
         
         Assert.IsType<NoContentResult>(result);
@@ -67,8 +76,10 @@ public class ItemControllerTest
         var item = ItemGenerator.GenerateItems(1).First();
         var itemRepositoryMock = Substitute.For<IItemRepository>();
         itemRepositoryMock.Update(item).Returns((Item)null!);
+        var loggerMock = Substitute.For<ILogger<ItemsController>>();
+        loggerMock.LogInformation("");
 
-        var sut = new ItemsController(itemRepositoryMock);
+        var sut = new ItemsController(itemRepositoryMock, loggerMock);
         var result = await sut.Put(item);
 
         Assert.IsType<NotFoundResult>(result);
@@ -85,8 +96,10 @@ public class ItemControllerTest
                 && x.Progress == item.Progress 
                 && x.DueDate == item.DueDate))
             .Returns(item);
+        var loggerMock = Substitute.For<ILogger<ItemsController>>();
+        loggerMock.LogInformation("");
         
-        var sut = new ItemsController(itemRepositoryMock);
+        var sut = new ItemsController(itemRepositoryMock, loggerMock);
         var result = await sut.Post(new CreateItemRequest
         {
             Title = item.Title,
@@ -107,8 +120,10 @@ public class ItemControllerTest
         var itemRepositoryMock = Substitute.For<IItemRepository>();
         itemRepositoryMock.Find(item.Id).Returns(item);
         itemRepositoryMock.Remove(item).Returns(item);
+        var loggerMock = Substitute.For<ILogger<ItemsController>>();
+        loggerMock.LogInformation("");
 
-        var sut = new ItemsController(itemRepositoryMock);
+        var sut = new ItemsController(itemRepositoryMock, loggerMock);
         var result = await sut.Delete(item.Id);
 
         Assert.Equivalent(item, result.Value);
@@ -120,8 +135,10 @@ public class ItemControllerTest
         var item = ItemGenerator.GenerateItems(1).First();
         var itemRepositoryMock = Substitute.For<IItemRepository>();
         itemRepositoryMock.Find(item.Id).Returns((Item)null!);
+        var loggerMock = Substitute.For<ILogger<ItemsController>>();
+        loggerMock.LogInformation("");
 
-        var sut = new ItemsController(itemRepositoryMock);
+        var sut = new ItemsController(itemRepositoryMock, loggerMock);
         var result = await sut.Delete(item.Id);
         
         Assert.IsType<NotFoundResult>(result.Result);
