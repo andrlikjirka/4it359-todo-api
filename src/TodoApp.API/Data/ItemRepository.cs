@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TodoApp.Api.Messages;
 
 namespace TodoApp.Api.Data;
 
@@ -52,4 +53,55 @@ public class ItemRepository : IItemRepository
         await _context.SaveChangesAsync();
         return item;
     }
+
+    /**
+     * Method finds items by the given query
+     */
+    public async Task<Item[]> FindByQuery(QueryRequest request)
+    {
+        IQueryable<Item> items = _context.Items;
+        if (request.Name is not null)
+        {
+            items = items.Where(item => item.Title.ToLower().Contains(request.Name.ToLower()));
+        }
+
+        if (request.ProgressFrom is not null)
+        {
+            items = items.Where(item => item.Progress >= request.ProgressFrom);
+        }
+
+        if (request.ProgressTo is not null)
+        {
+            items = items.Where(item => item.Progress <= request.ProgressTo);
+        }
+
+        if (request.DueDateFrom is not null)
+        {
+            items = items.Where(item => item.DueDate >= request.DueDateFrom);
+        }
+
+        if (request.DueDateTo is not null)
+        {
+            items = items.Where(item => item.DueDate <= request.DueDateTo);
+        }
+
+        return await items
+            .Take(request.Limit)
+            .ToArrayAsync();
+    }
+
+    /**
+     * Method finds items with giver priority and takes only the given limit
+     */
+    public async Task<Item[]> FindByPriority(int priority, int? limit)
+    {
+        IQueryable<Item> items = _context.Items;
+        items = items.Where(item => item.Priority == priority);
+        if (limit is not null)
+        {
+            items = items.Take(limit.Value);
+        }
+        return await items.ToArrayAsync();
+    }
+    
 }
