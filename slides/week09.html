@@ -13,7 +13,7 @@
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
 <h1 id="web-application-development-on-net-platform">Web application development on .NET platform</h1>
-<h3 id="aspnet-core">ASP.NET Core</h3>
+<h3 id="observability">Observability</h3>
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
   mermaid.initialize({ startOnLoad: true });
@@ -22,206 +22,616 @@
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="2" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="web-application-framework">Web application framework</h1>
+<h1 id="what-is-observability">What is observability</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>encapsulates low level operations
-<ul>
-<li>HTTP, TCP and lower level networking details</li>
-<li>HTML infrastructure</li>
-<li>REST communication details</li>
-<li>server infrastructure</li>
-</ul>
-</li>
-<li>provides a well defined structure</li>
-<li>offers pre-made blocks for web app creation</li>
-<li>maintainable, scalable, extendable</li>
-<li>lets you focus on your business</li>
-<li>speeds up development</li>
+<li>system property</li>
+<li>can we reason abou the system?</li>
+<li>logs</li>
+<li>traces</li>
+<li>metrics</li>
 </ul>
 </div><div class="columns-right">
-  <img src="bus.webp" />
+<img src="authentication.webp" />
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="3" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
+<h1 id="logs">logs</h1>
 <div class="columns"><div class="columns-left">
-<h1 id="aspnet-core-1">ASP.NET Core</h1>
 <ul>
-<li>Server
+<li>most customizable</li>
+<li>usually stringified</li>
+<li>can be parsed
 <ul>
-<li>Kestrel</li>
-<li>listens to a port</li>
-</ul>
-</li>
-<li>Context
-<ul>
-<li>stores all request data</li>
-</ul>
-</li>
-<li>Pipeline
-<ul>
-<li>process request</li>
+<li>data lake</li>
+<li>data warehouse</li>
+<li>map reduce</li>
 </ul>
 </li>
 </ul>
 </div><div class="columns-right">
-<div class="mermaid" style="width:800;margin-left:-150">
-sequenceDiagram
-    participant Server as Server (Kestrel)
-    participant App as Application
-    participant MW1 as Middleware 1
-    participant MWn as Middleware N
-    Server--&gt;&gt;+App: request
-    App-&gt;&gt;App: initialize HttpContext
-    App--&gt;&gt;+MW1: ProcessRequestAsync
-    MW1-&gt;&gt;+MWn: next
-    MWn--&gt;&gt;-MW1: 
-    MW1--&gt;&gt;-App: 
-    App--&gt;&gt;-Server: response
-</div>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-text">Configuring middleware: AuthenticationMiddleware initialized at [timestamp]
+Responding with 404 Not Found for URL &#x27;/api/products/999
+Executed query &#x27;SELECT * FROM products WHERE category = &#x27;books&#x27;&#x27; in 85ms
+</code></pre>
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="4" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
+<h1 id="enhanced-logs">enhanced logs</h1>
 <div class="columns"><div class="columns-left">
-<h1 id="application-initialization">Application initialization</h1>
 <ul>
-<li>from process start to application start</li>
-<li>defines configuration files (appsettings.json)</li>
-<li>registers types (services) to DI</li>
-<li>adds middleware</li>
-<li>define app endpoints</li>
+<li>common information
+<ul>
+<li>timestamp</li>
+<li>instance ID</li>
+<li>trace ID</li>
 </ul>
-</div><div class="columns-right"><div class="mermaid">
-graph TD;
-    B[Create Host Builder] --&gt; C[Configure Host Configuration]
-    C --&gt; E[Configure Logging]
-    E --&gt; F[Configure Services]
-    F --&gt; G[Build Host & Create Application Builder]
-    G --&gt; I[Configure Middleware Pipeline]
-    I --&gt; J[Configure Endpoints]
-</div></div></div>
+</li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-text">2024-04-21T12:34:56.789Z|232553|fh234jfd23|
+  Configuring middleware: AuthenticationMiddleware initialized at [timestamp]
+2024-04-21T12:34:56.789Z|232553|fh234jfd23|
+  Responding with 404 Not Found for URL &#x27;/api/products/999
+2024-04-21T12:34:56.789Z|232553|fh234jfd23|
+  Executed query &#x27;SELECT * FROM products WHERE category = &#x27;books&#x27;&#x27; in 85ms
+
+232553|fh234jfd23
+2024-04-21T12:34:56.789Z|
+  Configuring middleware: AuthenticationMiddleware initialized at [timestamp]
+2024-04-21T12:34:56.789Z|
+  Responding with 404 Not Found for URL &#x27;/api/products/999
+2024-04-21T12:34:56.789Z|
+  Executed query &#x27;SELECT * FROM products WHERE category = &#x27;books&#x27;&#x27; in 85ms
+</code></pre>
+</div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="5" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="di-container">DI container</h1>
+<h1 id="data-classification">data classification</h1>
 <div class="columns"><div class="columns-left">
 <ul>
-<li>allows dependency injection</li>
-<li>maintains dependency instances</li>
-<li>provides extensibility, testability...<br />
-<br /></li>
+<li>public information
+<ul>
+<li>generally known information
+<ul>
+<li>published content</li>
+<li>shared data</li>
 </ul>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Foo</span> {}
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IBar</span> {}
-
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Baz</span>
-{
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Baz</span>(<span class="hljs-params">Foo foo, IBar bar</span>)</span>{}
-}
-</code></pre>
-</div><div class="columns-right"><div class="mermaid" style="margin-left:100">
-  graph TD;
-      B[create service collection] --&gt; C[register services]
-      C --&gt;|transient| C
-      C --&gt;|scoped| C
-      C --&gt;|singleton| C
-      C --&gt; D[build container]
-      D --&gt; E[resolve dependencies]
-      E --&gt; |resolve dependencies| E
-</div><br />
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">var</span> container = <span class="hljs-keyword">new</span> ServiceCollection()
-  .AddSingleton&lt;Bar&gt;()
-  .AddScoped&lt;IFoo, MyFoo&gt;()
-  .AddTransient&lt;Baz&gt;()
-  .Build();
-
-<span class="hljs-keyword">var</span> baz = container.GetService&lt;Baz&gt;();
-</code></pre>
+</li>
+<li>no risks when leaked</li>
+<li>no special measures</li>
+</ul>
+</li>
+</ul>
+</div><div class="columns-right">
+<img src="auth-props.webp" />
 </div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="6" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="exercise">exercise</h1>
+<h1 id="data-classification-1">data classification</h1>
+<div class="columns"><div class="columns-left">
 <ul>
-<li>pull forked repository <code>exercises</code></li>
-<li>checkout branch <code>week03</code></li>
-<li>create your branch on top of <code>week03</code></li>
-<li>follow <code>readme.md</code></li>
-<li>push and create a pull request</li>
-<li>let others review or find someone to do so</li>
+<li>operational information (OI)
+<ul>
+<li>information created by us about user
+<ul>
+<li>pseudo-identifiers</li>
+<li>unlinkable times, numbers...</li>
 </ul>
+</li>
+<li>risks when leaked
+<ul>
+<li>identity misuse</li>
+<li>reputation damage</li>
+</ul>
+</li>
+<li>measures
+<ul>
+<li>multiple eyes access</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div><div class="columns-right">
+<img src="auth-props.webp" />
+</div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="7" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="thank-you">Thank you!</h1>
+<h1 id="data-classification-2">data classification</h1>
+<div class="columns"><div class="columns-left">
+<ul>
+<li>Personal / Organizational identifiable information (PII, OII)
+<ul>
+<li>identify a person on its own or in context
+<ul>
+<li>birth number</li>
+<li>phone number</li>
+<li>address</li>
+</ul>
+</li>
+<li>risks when leaked
+<ul>
+<li>user can be linked</li>
+</ul>
+</li>
+<li>measures
+<ul>
+<li>encrypted or hashed</li>
+<li>user initiated access</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div><div class="columns-right">
+<img src="auth-props.webp" />
+</div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="8" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="can-ai-replace-software-engineers">Can AI replace software engineers?</h1>
+<h1 id="data-classification-3">data classification</h1>
+<div class="columns"><div class="columns-left">
 <ul>
-<li>computers understand computers</li>
-<li>AI can learn any programming language</li>
-<li>you can instruct AI by natural language</li>
-<li>anyone will be able to code with AI</li>
-<li>saves time -&gt; less programmers needed</li>
+<li>customer data
+<ul>
+<li>information created by customer
+<ul>
+<li>order history</li>
+<li>chat messages</li>
+<li>configurations</li>
+<li>bussines plans</li>
 </ul>
+</li>
+<li>risks when leaked
+<ul>
+<li>personal details misuse</li>
+</ul>
+</li>
+<li>measures
+<ul>
+<li>encrypted (ideally by BYOC)</li>
+<li>locality and temporarity</li>
+<li>user assisted access</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div><div class="columns-right">
+<img src="auth-props.webp" />
+</div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="9" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="can-ai-replace-software-engineers-1">Can AI replace software engineers?</h1>
+<h1 id="tracing">tracing</h1>
+<div class="columns"><div class="columns-left">
 <ul>
-<li>computers understand computers
+<li>traces calls through multiple services
 <ul>
-<li>analytical vs synthetical thinking</li>
+<li>performance evaluation</li>
+<li>bottleneck search</li>
+<li>hotspot and SPoF identification</li>
 </ul>
 </li>
-<li>AI can learn any programming language
+<li>Open Telemetry format
 <ul>
-<li>knowing a language doesn't mean programming</li>
-</ul>
-</li>
-<li>you can instruct AI by natural language
-<ul>
-<li>formalization limits</li>
-</ul>
-</li>
-<li>anyone will be able to code with AI
-<ul>
-<li>anyone can code even now without AI</li>
-</ul>
-</li>
-<li>saves time -&gt; less programmers needed
-<ul>
-<li>this is happening all the time</li>
-<li>that's what frameworks do</li>
+<li>version</li>
+<li>trace id</li>
+<li>span id</li>
+<li>flags</li>
 </ul>
 </li>
 </ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-text">00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+</code></pre>
+<ul>
+<li>00
+<ul>
+<li>version prefix</li>
+</ul>
+</li>
+<li>4bf92f3577b34da6a3ce929d0e0e4736
+<ul>
+<li>trace-id (128-bit)</li>
+</ul>
+</li>
+<li>00f067aa0ba902b7
+<ul>
+<li>span-id (64-bit)</li>
+</ul>
+</li>
+<li>01
+<ul>
+<li>trace-flags (sampled)</li>
+</ul>
+</li>
+</ul>
+</div></div>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="10" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 " lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
 ;">
-<h1 id="how-can-ai-help-then">How can AI help then?</h1>
+<h1 id="tracing-1">tracing</h1>
+<img src="traces_spans.png" />
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="11" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="metrics">metrics</h1>
+<div class="columns"><div class="columns-left">
 <ul>
-<li>formatting code avoiding bad practices
+<li>measurements indicating a behaviour</li>
+<li>purpose
 <ul>
-<li>spagetti, astonishing moments, godclasses...</li>
+<li>performance audit</li>
+<li>hotspot identification</li>
+<li>monitoring and alerting</li>
+<li>debugging and trouble-shooting</li>
 </ul>
 </li>
-<li>explaining code parts</li>
-<li>oferring alternatives and patterns</li>
-<li>1st level reviews</li>
-<li>adding boilerplate</li>
 </ul>
+</div><div class="columns-right">
+<ul>
+<li>
+<p>multiple parts</p>
+<ul>
+<li>identifier</li>
+<li>timestamp</li>
+<li>value</li>
+<li>dimensions
+<ul>
+<li>name/value pairs</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>cardinality</p>
+<ul>
+<li>unique dimension values</li>
+<li>high cardinality is bad
+<ul>
+<li>storage, performance, interpretation...</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="12" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<div class="columns"><div class="columns-left">
+<h1 id="metric-types">metric types</h1>
+<ul>
+<li>counter
+<ul>
+<li>counts occurences of events</li>
+<li>increasing, dicreasing</li>
+<li>monotonic, non-monotonic</li>
+</ul>
+</li>
+<li>gauge
+<ul>
+<li>reports a measurement at a time</li>
+<li>CPU usage</li>
+</ul>
+</li>
+<li>histogram
+<ul>
+<li>captures distribution of values</li>
+</ul>
+</li>
+</ul>
+</div><div class="columns-right">
+<h1 id="metric-processing">metric processing</h1>
+<ul>
+<li>creation</li>
+<li>client aggregation</li>
+<li>export</li>
+<li>store</li>
+<li>system aggregation</li>
+<li>presentation</li>
+</ul>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="13" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="ilogger">Ilogger</h1>
+<div class="columns"><div class="columns-left">
+<ul>
+<li>general interface</li>
+<li>throughout the whole dotnet</li>
+<li>generic version</li>
+<li>lot of extensions</li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">ILogger</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Log</span>&lt;<span class="hljs-title">TState</span>&gt;(<span class="hljs-params">
+      LogLevel logLevel,
+      EventId eventId,
+      TState state,
+      Exception? exception,
+      Func&lt;TState, Exception?, <span class="hljs-built_in">string</span>&gt; formatter</span>)</span>;
+
+    <span class="hljs-function"><span class="hljs-built_in">bool</span> <span class="hljs-title">IsEnabled</span>(<span class="hljs-params">LogLevel logLevel</span>)</span>;
+
+    IDisposable? BeginScope&lt;TState&gt;(TState state) <span class="hljs-keyword">where</span> TState : <span class="hljs-keyword">notnull</span>;
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">ILogger</span>&lt;<span class="hljs-keyword">out</span> <span class="hljs-title">TCategoryName</span>&gt; : <span class="hljs-title">ILogger</span>
+{
+}
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogTrace</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogTrace</span>(<span class="hljs-params">Exception exception, <span class="hljs-built_in">string</span> message, <span class="hljs-keyword">params</span> <span class="hljs-built_in">object</span>[] args</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogDebug</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogDebug</span>(<span class="hljs-params">Exception exception, <span class="hljs-built_in">string</span> message, <span class="hljs-keyword">params</span> <span class="hljs-built_in">object</span>[] args</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogInformation</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogInformation</span>(<span class="hljs-params">Exception exception, <span class="hljs-built_in">string</span> message, <span class="hljs-keyword">params</span> <span class="hljs-built_in">object</span>[] args</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogWarning</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogWarning</span>(<span class="hljs-params">Exception exception, <span class="hljs-built_in">string</span> message, <span class="hljs-keyword">params</span> <span class="hljs-built_in">object</span>[] args</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogError</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogError</span>(<span class="hljs-params">Exception exception, <span class="hljs-built_in">string</span> message, <span class="hljs-keyword">params</span> <span class="hljs-built_in">object</span>[] args</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogCritical</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message</span>)</span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">LogCritical</span>(<span class="hljs-params">Exception exception, <span class="hljs-built_in">string</span> message, <span class="hljs-keyword">params</span> <span class="hljs-built_in">object</span>[] args</span>)</span>;
+</code></pre>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="14" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="log-levels">log levels</h1>
+<div class="columns"><div class="columns-left">
+<ul>
+<li>critical
+<ul>
+<li>need to stop immediately</li>
+</ul>
+</li>
+<li>error
+<ul>
+<li>investigate and fix</li>
+</ul>
+</li>
+<li>warning
+<ul>
+<li>shouldn't happen but not severe</li>
+</ul>
+</li>
+<li>information
+<ul>
+<li>audit information</li>
+</ul>
+</li>
+<li>debug
+<ul>
+<li>root cause identification</li>
+</ul>
+</li>
+<li>trace
+<ul>
+<li>everything</li>
+</ul>
+</li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-json"><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;Logging&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;LogLevel&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+            <span class="hljs-attr">&quot;Default&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Information&quot;</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-attr">&quot;Microsoft&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Warning&quot;</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-attr">&quot;Microsoft.Hosting.Lifetime&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Information&quot;</span>
+        <span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="15" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="registration">Registration</h1>
+<div class="columns"><div class="columns-left">
+<ul>
+<li>adds logging mechanism</li>
+<li>adds outputs</li>
+<li>filtering</li>
+<li>advanced configuration</li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">builder.Logging.ClearProviders();
+builder.Logging.AddDebug();
+builder.Logging.AddSimpleConsole(options =&gt; options.IncludeScopes = <span class="hljs-literal">true</span>);
+
+<span class="hljs-comment">/************************************************************************/</span>
+
+builder.ConfigureLogging(logging =&gt;
+{
+    logging.ClearProviders();
+    logging.AddConsole(options =&gt;
+    {
+        options.LogToStandardErrorThreshold = LogLevel.Error;
+    });
+    logging.AddDebug();
+    logging.AddFilter(<span class="hljs-string">&quot;Microsoft&quot;</span>, LogLevel.Warning);
+    logging.AddFilter(<span class="hljs-string">&quot;System&quot;</span>, LogLevel.Error);
+});
+
+</code></pre>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="16" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="logging">logging</h1>
+<div class="columns"><div class="columns-left">
+<ul>
+<li>use extension methods
+<ul>
+<li>interface is primarily for frameworks</li>
+</ul>
+</li>
+<li>don't use string operations
+<ul>
+<li>use built-in formatter instead</li>
+</ul>
+</li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">OrderService</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> ILogger&lt;OrderService&gt; _logger;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">OrderService</span>(<span class="hljs-params">ILogger&lt;OrderService&gt; logger, ITransaction transaction</span>)</span>
+    {
+        _logger = logger;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">GetProduct</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> id</span>)</span>
+    {
+      <span class="hljs-keyword">try</span>
+      {
+          <span class="hljs-keyword">var</span> order = transaction.Start(id);
+          _logger.LogInformation(<span class="hljs-string">&quot;Getting product with ID: {ProductId}&quot;</span>, id);
+          <span class="hljs-keyword">return</span> order;
+      }
+      <span class="hljs-keyword">catch</span> (Exception ex)
+      {
+          _logger.LogError(ex, <span class="hljs-string">&quot;Failed to get product with ID: {ProductId}&quot;</span>, id);
+      }
+    }
+}
+</code></pre>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="17" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<div class="columns"><div class="columns-left">
+<h1 id="logging-scopes">logging scopes</h1>
+<ul>
+<li>creates logging context</li>
+<li>attached to all log instances</li>
+<li>use short scopes
+<ul>
+<li>performance ramifications</li>
+</ul>
+</li>
+<li>use consistent key names
+<ul>
+<li>avoid obfuscating your logs</li>
+</ul>
+</li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp"><span class="hljs-keyword">using</span>(_logger.BeginScope(
+  <span class="hljs-keyword">new</span> Dictionary&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">object</span>&gt; { { <span class="hljs-string">&quot;TransactionId&quot;</span>, order.Id } }))
+{
+    _logger.LogInformation(<span class="hljs-string">&quot;Starting transaction&quot;</span>);
+    _transaction.Start()
+    _logger.LogInformation(<span class="hljs-string">&quot;Transaction completed&quot;</span>);
+}
+</code></pre>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;Timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-04-21T12:34:56.789Z&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;Level&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Information&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;MessageTemplate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Starting transaction&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;Properties&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;TransactionId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;12345&quot;</span> <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+<span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;Timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-04-21T12:34:56.888Z&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;Level&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Information&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;MessageTemplate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Writing data&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;Properties&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;TransactionId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;12345&quot;</span> <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+<span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;Timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2024-04-21T12:34:58.789Z&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;Level&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Information&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;MessageTemplate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Transaction completed&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;Properties&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;TransactionId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;12345&quot;</span> <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="18" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="open-telemetry">Open Telemetry</h1>
+<div class="columns"><div class="columns-left">
+<ul>
+<li>consorcium-based logging standard</li>
+<li>define interfaces and concepts
+<ul>
+<li>same for all providers</li>
+<li>same for all languages</li>
+</ul>
+</li>
+</ul>
+</div><div class="columns-right">
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash">dotnet add package OpenTelemetry.Exporter.Console
+dotnet add package OpenTelemetry.Extensions.Hosting
+dotnet add package OpenTelemetry.Instrumentation.AspNetCore
+</code></pre>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-csharp">builder.Services.AddOpenTelemetry()
+  .ConfigureResource(resource =&gt; resource
+      .AddService(serviceName: <span class="hljs-string">&quot;TodoApp&quot;</span>))
+  .WithTracing(tracing =&gt; tracing
+      .AddAspNetCoreInstrumentation()
+      .AddConsoleExporter());
+</code></pre>
+</div></div>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="19" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="exercise">Exercise</h1>
+<ul>
+<li>add logging to ItemsController
+<ul>
+<li>think about multiple levels of logging</li>
+<li>ensure we can turn it off though app configuration</li>
+</ul>
+</li>
+<li>add OpenTelemetry request instrumentation
+<ul>
+<li>export to console</li>
+</ul>
+</li>
+</ul>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="20" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="observability-questions">Observability questions</h1>
+<ul>
+<li>price</li>
+<li>performance</li>
+<li>legistation</li>
+</ul>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="21" data-style=".columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+" lang="cs-CZ" style="--style:.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 0; margin:0;}
+;">
+<h1 id="thank-you">Thank you!</h1>
 </section>
 <script>!function(){"use strict";const t={h1:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"1"},style:"display: block; font-size: 2em; margin-block-start: 0.67em; margin-block-end: 0.67em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h2:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"2"},style:"display: block; font-size: 1.5em; margin-block-start: 0.83em; margin-block-end: 0.83em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h3:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"3"},style:"display: block; font-size: 1.17em; margin-block-start: 1em; margin-block-end: 1em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h4:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"4"},style:"display: block; margin-block-start: 1.33em; margin-block-end: 1.33em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h5:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"5"},style:"display: block; font-size: 0.83em; margin-block-start: 1.67em; margin-block-end: 1.67em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},h6:{proto:()=>HTMLHeadingElement,attrs:{role:"heading","aria-level":"6"},style:"display: block; font-size: 0.67em; margin-block-start: 2.33em; margin-block-end: 2.33em; margin-inline-start: 0px; margin-inline-end: 0px; font-weight: bold;"},span:{proto:()=>HTMLSpanElement},pre:{proto:()=>HTMLElement,style:"display: block; font-family: monospace; white-space: pre; margin: 1em 0; --marp-auto-scaling-white-space: pre;"}},e="data-marp-auto-scaling-wrapper",i="data-marp-auto-scaling-svg",n="data-marp-auto-scaling-container";class s extends HTMLElement{constructor(){super(),this.svgPreserveAspectRatio="xMinYMid meet";const t=t=>([e])=>{const{width:i,height:n}=e.contentRect;this[t]={width:i,height:n},this.updateSVGRect()};this.attachShadow({mode:"open"}),this.containerObserver=new ResizeObserver(t("containerSize")),this.wrapperObserver=new ResizeObserver(((...e)=>{t("wrapperSize")(...e),this.flushSvgDisplay()}))}static get observedAttributes(){return["data-downscale-only"]}connectedCallback(){var t,s,o,r,a;this.shadowRoot.innerHTML=`\n<style>\n  svg[${i}] { display: block; width: 100%; height: auto; vertical-align: top; }\n  span[${n}] { display: table; white-space: var(--marp-auto-scaling-white-space, nowrap); width: max-content; }\n</style>\n<div ${e}>\n  <svg part="svg" ${i}>\n    <foreignObject><span ${n}><slot></slot></span></foreignObject>\n  </svg>\n</div>\n    `.split(/\n\s*/).join(""),this.wrapper=null!==(t=this.shadowRoot.querySelector(`div[${e}]`))&&void 0!==t?t:void 0;const l=this.svg;this.svg=null!==(o=null===(s=this.wrapper)||void 0===s?void 0:s.querySelector(`svg[${i}]`))&&void 0!==o?o:void 0,this.svg!==l&&(this.svgComputedStyle=this.svg?window.getComputedStyle(this.svg):void 0),this.container=null!==(a=null===(r=this.svg)||void 0===r?void 0:r.querySelector(`span[${n}]`))&&void 0!==a?a:void 0,this.observe()}disconnectedCallback(){this.svg=void 0,this.svgComputedStyle=void 0,this.wrapper=void 0,this.container=void 0,this.observe()}attributeChangedCallback(){this.observe()}flushSvgDisplay(){const{svg:t}=this;t&&(t.style.display="inline",requestAnimationFrame((()=>{t.style.display=""})))}observe(){this.containerObserver.disconnect(),this.wrapperObserver.disconnect(),this.wrapper&&this.wrapperObserver.observe(this.wrapper),this.container&&this.containerObserver.observe(this.container),this.svgComputedStyle&&this.observeSVGStyle(this.svgComputedStyle)}observeSVGStyle(t){const e=()=>{const i=(()=>{const e=t.getPropertyValue("--preserve-aspect-ratio");if(e)return e.trim();return`x${(({textAlign:t,direction:e})=>{if(t.endsWith("left"))return"Min";if(t.endsWith("right"))return"Max";if("start"===t||"end"===t){let i="rtl"===e;return"end"===t&&(i=!i),i?"Max":"Min"}return"Mid"})(t)}YMid meet`})();i!==this.svgPreserveAspectRatio&&(this.svgPreserveAspectRatio=i,this.updateSVGRect()),t===this.svgComputedStyle&&requestAnimationFrame(e)};e()}updateSVGRect(){var t,e,i,n,s,o,r;let a=Math.ceil(null!==(e=null===(t=this.containerSize)||void 0===t?void 0:t.width)&&void 0!==e?e:0);const l=Math.ceil(null!==(n=null===(i=this.containerSize)||void 0===i?void 0:i.height)&&void 0!==n?n:0);void 0!==this.dataset.downscaleOnly&&(a=Math.max(a,null!==(o=null===(s=this.wrapperSize)||void 0===s?void 0:s.width)&&void 0!==o?o:0));const c=null===(r=this.svg)||void 0===r?void 0:r.querySelector(":scope > foreignObject");if(null==c||c.setAttribute("width",`${a}`),null==c||c.setAttribute("height",`${l}`),this.svg&&(this.svg.setAttribute("viewBox",`0 0 ${a} ${l}`),this.svg.setAttribute("preserveAspectRatio",this.svgPreserveAspectRatio),this.svg.style.height=a<=0||l<=0?"0":""),this.container){const t=this.svgPreserveAspectRatio.toLowerCase();this.container.style.marginLeft=t.startsWith("xmid")||t.startsWith("xmax")?"auto":"0",this.container.style.marginRight=t.startsWith("xmi")?"auto":"0"}}}const o=(t,{attrs:e={},style:i})=>class extends t{constructor(...t){super(...t);for(const[t,i]of Object.entries(e))this.hasAttribute(t)||this.setAttribute(t,i);this.attachShadow({mode:"open"})}static get observedAttributes(){return["data-auto-scaling"]}connectedCallback(){this._update()}attributeChangedCallback(){this._update()}_update(){const t=i?`<style>:host { ${i} }</style>`:"";let e="<slot></slot>";const{autoScaling:n}=this.dataset;if(void 0!==n){e=`<marp-auto-scaling exportparts="svg:auto-scaling" ${"downscale-only"===n?"data-downscale-only":""}>${e}</marp-auto-scaling>`}this.shadowRoot.innerHTML=t+e}};let r;const a=Symbol();let l;const c="marpitSVGPolyfill:setZoomFactor,",d=Symbol(),g=Symbol();const h=()=>{const t="Apple Computer, Inc."===navigator.vendor,e=t?[u]:[],i={then:e=>(t?(async()=>{if(void 0===l){const t=document.createElement("canvas");t.width=10,t.height=10;const e=t.getContext("2d"),i=new Image(10,10),n=new Promise((t=>{i.addEventListener("load",(()=>t()))}));i.crossOrigin="anonymous",i.src="data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%2210%22%20viewBox%3D%220%200%201%201%22%3E%3CforeignObject%20width%3D%221%22%20height%3D%221%22%20requiredExtensions%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxhtml%22%3E%3Cdiv%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxhtml%22%20style%3D%22width%3A%201px%3B%20height%3A%201px%3B%20background%3A%20red%3B%20position%3A%20relative%22%3E%3C%2Fdiv%3E%3C%2FforeignObject%3E%3C%2Fsvg%3E",await n,e.drawImage(i,0,0),l=e.getImageData(5,5,1,1).data[3]<128}return l})().then((t=>{null==e||e(t?[u]:[])})):null==e||e([]),i)};return Object.assign(e,i)};let p,m;function u(t){const e="object"==typeof t&&t.target||document,i="object"==typeof t?t.zoom:t;window[g]||(Object.defineProperty(window,g,{configurable:!0,value:!0}),document.body.style.zoom=1.0001,document.body.offsetHeight,document.body.style.zoom=1,window.addEventListener("message",(({data:t,origin:e})=>{if(e===window.origin)try{if(t&&"string"==typeof t&&t.startsWith(c)){const[,e]=t.split(","),i=Number.parseFloat(e);Number.isNaN(i)||(m=i)}}catch(t){console.error(t)}})));let n=!1;Array.from(e.querySelectorAll("svg[data-marpit-svg]"),(t=>{var e,s,o,r;t.style.transform||(t.style.transform="translateZ(0)");const a=i||m||t.currentScale||1;p!==a&&(p=a,n=a);const l=t.getBoundingClientRect(),{length:c}=t.children;for(let i=0;i<c;i+=1){const n=t.children[i];if(n.getScreenCTM){const t=n.getScreenCTM();if(t){const i=null!==(s=null===(e=n.x)||void 0===e?void 0:e.baseVal.value)&&void 0!==s?s:0,c=null!==(r=null===(o=n.y)||void 0===o?void 0:o.baseVal.value)&&void 0!==r?r:0,d=n.children.length;for(let e=0;e<d;e+=1){const s=n.children[e];if("SECTION"===s.tagName){const{style:e}=s;e.transformOrigin||(e.transformOrigin=`${-i}px ${-c}px`),e.transform=`scale(${a}) matrix(${t.a}, ${t.b}, ${t.c}, ${t.d}, ${t.e-l.left}, ${t.f-l.top}) translateZ(0.0001px)`;break}}}}}})),!1!==n&&Array.from(e.querySelectorAll("iframe"),(({contentWindow:t})=>{null==t||t.postMessage(`${c}${n}`,"null"===window.origin?"*":window.origin)}))}function v({once:t=!1,target:e=document}={}){const i=function(t=document){if(t[d])return t[d];let e=!0;const i=()=>{e=!1,delete t[d]};Object.defineProperty(t,d,{configurable:!0,value:i});let n=[],s=!1;(async()=>{try{n=await h()}finally{s=!0}})();const o=()=>{for(const e of n)e({target:t});s&&0===n.length||e&&window.requestAnimationFrame(o)};return o(),i}(e);return t?(i(),()=>{}):i}p=1,m=void 0;const b=Symbol(),w=(e=document)=>{if("undefined"==typeof window)throw new Error("Marp Core's browser script is valid only in browser context.");if(((e=document)=>{const i=window[a];i||customElements.define("marp-auto-scaling",s);for(const n of Object.keys(t)){const s=`marp-${n}`,a=t[n].proto();null!=r||(r=!!document.createElement("div",{is:"marp-auto-scaling"}).outerHTML.startsWith("<div is")),r&&a!==HTMLElement?i||customElements.define(s,o(a,{style:t[n].style}),{extends:n}):(i||customElements.define(s,o(HTMLElement,t[n])),e.querySelectorAll(`${n}[is="${s}"]`).forEach((t=>{t.outerHTML=t.outerHTML.replace(new RegExp(`^<${n}`,"i"),`<${s}`).replace(new RegExp(`</${n}>$`,"i"),`</${s}>`)})))}window[a]=!0})(e),e[b])return e[b];const i=v({target:e}),n=()=>{i(),delete e[b]},l=Object.assign(n,{cleanup:n,update:()=>w(e)});return Object.defineProperty(e,b,{configurable:!0,value:l}),l},y=document.currentScript;w(y?y.getRootNode():document)}();
 </script></foreignObject></svg></div><script>/*!! License: https://unpkg.com/@marp-team/marp-cli@3.4.0/lib/bespoke.js.LICENSE.txt */
