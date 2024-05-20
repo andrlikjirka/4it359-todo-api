@@ -1,8 +1,8 @@
-﻿using TodoApp.Api.Data;
+using TodoApp.Api.Data;
 
-namespace TodoApp.Api.Extensions;
+namespace TodoApp.Api.Helpers;
 
-public static class ApplicationBuilderExtensions
+public static class ItemGenerator
 {
     private static readonly string[] Titles =
     [
@@ -29,18 +29,36 @@ public static class ApplicationBuilderExtensions
 
     private static readonly Random Random = new();
 
-    public static void SeedData(this IApplicationBuilder app)
-   {
-       using var scope = app.ApplicationServices.CreateScope();
-       var context = scope.ServiceProvider.GetRequiredService<ItemContext>();
+    public static IEnumerable<Item> GenerateItems()
+    {
+        return GenerateItems(Titles.Length);
+    }
+    
+    public static IEnumerable<Item> GenerateItems(int size)
+    {
+        if (size > Titles.Length)
+        {
+            throw new ArgumentOutOfRangeException(nameof(size), "Size must be less than or equal to the number of titles");
+        }
 
-       context.Items.AddRange(Titles.Select(title => new Item()
-       {
-           Title = title,
-           Progress = Random.Next(0, 101),
-           Priority = Random.Next(1, 6),
-           DueDate = DateTime.Now.AddHours(Random.Next(-73, 73))
-       }));
-       context.SaveChanges();
-   }
+        var usedTitles = new HashSet<string>();
+
+        return Enumerable.Range(0, size).Select(_ =>
+        {
+            var title = Titles[Random.Next(0, Titles.Length)];
+            while (!usedTitles.Add(title))
+            {
+                title = Titles[Random.Next(0, Titles.Length)];
+            }
+
+            return new Item
+            {
+                Title = title,
+                Progress = Random.Next(0,101),
+                Priority = Random.Next(1,6),
+                DueDate = DateTime.Now.AddHours(Random.Next(-73,73))
+            };
+        });
+
+    }
 }
